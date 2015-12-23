@@ -1,0 +1,32 @@
+[
+  {
+    "type": "Улична дупка",
+    "status": 0,
+    "user": "Явор Иванов",
+    "description": "Улична дупка на бул. България",
+    "location": [
+      42.6603369,
+      23.283244
+    ],
+    "address": "бул. България 102",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/f/f2/%D0%91%D1%83%D0%BB._%D0%91%D1%8A%D0%BB%D0%B3%D0%B0%D1%80%D0%B8%D1%8F%2C_%D0%A1%D0%BE%D1%84%D0%B8%D1%8F_3.JPG"
+    ],
+    "date_created": "2015-12-22T16:00:00+0200"
+  },
+  {
+    "type": "Липсваща шахта",
+    "status": 0,
+    "user": "Явор Иванов",
+    "description": "Липсваща шахта на улица Тодор Каблешков",
+    "location": [
+      42.663515,
+      23.291516
+    ],
+    "address": "ул. Тодор Каблешков 230",
+    "images": [
+      "http://www.capital.bg/shimg/zx620y348_825134.jpg"
+    ],
+    "date_created": "2015-12-21T18:00:00+0200"
+  }
+]
