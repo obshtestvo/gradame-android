@@ -28,7 +28,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import me.grada.ui.fragment.NearbySingalsFragment;
+import me.grada.ui.fragment.NearbySignalsFragment;
 import me.grada.ui.fragment.RecentSignalsFragment;
 
 /**
@@ -53,7 +53,7 @@ public class HomePageAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return RecentSignalsFragment.newInstance();
         }
-        return NearbySingalsFragment.newInstance();
+        return NearbySignalsFragment.newInstance();
     }
 
     @Override

@@ -53,3 +53,16 @@
 # Models used by Gson
 -keep class me.grada.io.model.** { *; }
 -keep class me.grada.io.event.** { *; }
+
+#  Butterknife
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}

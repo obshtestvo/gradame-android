@@ -33,11 +33,4 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:text="Nearby signals"
-        android:gravity="center" />
-
 </FrameLayout>

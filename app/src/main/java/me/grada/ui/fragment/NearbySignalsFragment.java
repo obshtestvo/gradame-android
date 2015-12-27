@@ -36,19 +36,19 @@ import me.grada.ui.view.MaterialProgressView;
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class RecentSignalsFragment extends BaseFragment {
+public class NearbySignalsFragment extends BaseFragment {
 
     @Bind(R.id.progress_view)
     MaterialProgressView progressView;
 
-    public static RecentSignalsFragment newInstance() {
-        return new RecentSignalsFragment();
+    public static NearbySignalsFragment newInstance() {
+        return new NearbySignalsFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recent_signals, container, false);
+        return inflater.inflate(R.layout.fragment_nearby_signals, container, false);
     }
 
 }
