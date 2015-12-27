@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,7 +46,7 @@ import me.grada.utils.ViewUtils;
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class NearbySignalsFragment extends MapFragment implements OnMapReadyCallback {
+public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCallback {
 
     @Bind(R.id.progress_view)
     MaterialProgressView progressView;
