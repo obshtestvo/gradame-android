@@ -25,21 +25,35 @@
 package me.grada.ui.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+
 import butterknife.Bind;
 import me.grada.R;
 import me.grada.ui.view.MaterialProgressView;
+import me.grada.utils.ViewUtils;
 
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class NearbySignalsFragment extends BaseFragment {
+public class NearbySignalsFragment extends MapFragment implements OnMapReadyCallback {
 
     @Bind(R.id.progress_view)
     MaterialProgressView progressView;
+
+    @Bind(R.id.map_view)
+    MapView mapView;
 
     public static NearbySignalsFragment newInstance() {
         return new NearbySignalsFragment();
@@ -51,4 +65,42 @@ public class NearbySignalsFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_nearby_signals, container, false);
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Gets the MapView from the XML layout and creates it
+        mapView.onCreate(savedInstanceState);
+        // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
+        MapsInitializer.initialize(this.getActivity());
+        mapView.getMapAsync(this);
+    }
+
+    @Override
+    public void onResume() {
+        mapView.onResume();
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        // Updates the location and zoom of the MapView
+        CameraUpdate cameraUpdate = CameraUpdateFactory
+                .newLatLngZoom(new LatLng(42.6603369, 23.283244), 12);
+        googleMap.animateCamera(cameraUpdate);
+        ViewUtils.animateOut(progressView);
+    }
 }

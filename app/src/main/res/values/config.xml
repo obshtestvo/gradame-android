@@ -23,19 +23,8 @@
   ~ SOFTWARE.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<resources>
 
-    <me.grada.ui.view.MaterialProgressView
-        android:id="@+id/progress_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+    <string name="com.google.android.geo.API_KEY">AIzaSyD6Gat9J3EUK9CHHg-yfWiz6z9_bMnEjRk</string>
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</FrameLayout>
+</resources>
