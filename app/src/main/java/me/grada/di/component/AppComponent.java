@@ -32,7 +32,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import me.grada.di.module.AppModule;
-import me.grada.ui.activity.HomeActivity;
+import me.grada.ui.fragment.RecentSignalsFragment;
 
 /**
  * Base app component.  It's likely it will be used as a dependency / downstream component
@@ -44,7 +44,7 @@ import me.grada.ui.activity.HomeActivity;
 @Component(modules = {AppModule.class})
 public interface AppComponent {
 
-    void inject(HomeActivity activity);
+    void inject(RecentSignalsFragment recentSignalsFragment);
 
     Application application();
 

@@ -37,4 +37,31 @@ public class Signal {
     private String[] images;
     private String dateCreated;
 
+    public String getType() {
+        return type;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public double[] getLocation() {
+        return location;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String[] getImages() {
+        return images;
+    }
+
+    public String getDateCreated() {
+        return dateCreated;
+    }
 }

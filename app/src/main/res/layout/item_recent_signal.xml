@@ -1,5 +1,4 @@
-<resources>
-    <!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ The MIT License (MIT)
   ~
   ~ Copyright (c) 2015 Obshtestvo
@@ -22,30 +21,25 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="nav_header_vertical_spacing">16dp</dimen>
-    <dimen name="nav_header_height">160dp</dimen>
 
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">@dimen/keyline_1</dimen>
-    <dimen name="activity_vertical_margin">@dimen/keyline_1</dimen>
-    <dimen name="fab_margin">@dimen/keyline_1</dimen>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="@dimen/widget_corner_radius"
+    app:cardElevation="@dimen/view_default_elevation"
+    app:contentPaddingLeft="@dimen/keyline_1"
+    app:contentPaddingTop="@dimen/keyline_1_minus_8dp"
+    app:contentPaddingRight="@dimen/keyline_1"
+    app:contentPaddingBottom="@dimen/keyline_1_minus_8dp"
+    app:cardUseCompatPadding="true">
 
-    <dimen name="widget_corner_radius">6dp</dimen>
-    <dimen name="view_default_elevation">4dp</dimen>
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/text_size_medium" />
 
-    <dimen name="keyline_1">16dp</dimen>
-    <dimen name="keyline_1_minus_8dp">8dp</dimen>
-    <dimen name="keyline_2">72dp</dimen>
-    <dimen name="keyline_2_minus_16dp">56dp</dimen>
-    <dimen name="list_item_height">72dp</dimen>
-
-    <dimen name="text_size_xxsmall">8sp</dimen>
-    <dimen name="text_size_xsmall">10sp</dimen>
-    <dimen name="text_size_small">12sp</dimen>
-    <dimen name="text_size_medium">14sp</dimen>
-    <dimen name="text_size_medium_2">16sp</dimen>
-    <dimen name="text_size_large">18sp</dimen>
-    <dimen name="text_size_xlarge">32sp</dimen>
-
-</resources>
+</android.support.v7.widget.CardView>
