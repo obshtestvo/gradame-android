@@ -27,7 +27,6 @@ package me.grada.di.component;
 import dagger.Component;
 import me.grada.di.module.GsonModule;
 import me.grada.di.module.NetworkModule;
-import me.grada.di.module.PicassoModule;
 import me.grada.di.scope.PerTask;
 import me.grada.io.task.GetSignalsTask;
 
@@ -35,8 +34,7 @@ import me.grada.io.task.GetSignalsTask;
  * Created by yavorivanov on 22/12/2015.
  */
 @PerTask
-@Component(modules = {NetworkModule.class, GsonModule.class, PicassoModule.class},
-        dependencies = {AppComponent.class})
+@Component(modules = {NetworkModule.class, GsonModule.class}, dependencies = {AppComponent.class})
 public interface NetworkComponent {
 
     void inject(GetSignalsTask task);

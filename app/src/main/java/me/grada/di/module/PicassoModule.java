@@ -24,11 +24,33 @@
 
 package me.grada.di.module;
 
+import android.content.Context;
+
+import com.squareup.picasso.Picasso;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
+import dagger.Provides;
 
 /**
  * Created by yavorivanov on 22/12/2015.
  */
 @Module
 public class PicassoModule {
+
+    private Context context;
+
+    public PicassoModule(Context context) {
+        this.context = context;
+    }
+
+    @Singleton
+    @Provides
+    public Picasso providesPicasso() {
+        Picasso picasso = Picasso.with(context);
+        picasso.setLoggingEnabled(true);
+        return picasso;
+    }
+
 }

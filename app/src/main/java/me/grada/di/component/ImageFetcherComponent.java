@@ -22,26 +22,21 @@
  * SOFTWARE.
  */
 
-package me.grada;
+package me.grada.di.component;
 
-import android.app.Application;
+import javax.inject.Singleton;
 
-import javax.inject.Inject;
-
-import me.grada.di.Injector;
-import me.grada.di.component.AppComponent;
+import dagger.Component;
+import me.grada.di.module.PicassoModule;
+import me.grada.ui.adapter.RecentSignalsAdapter;
 
 /**
- * Created by yavorivanov on 23/12/2015.
+ * Created by yavorivanov on 27/12/2015.
  */
-public class GradaMeApp extends Application {
+@Singleton
+@Component(modules = {PicassoModule.class})
+public interface ImageFetcherComponent {
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    void inject(RecentSignalsAdapter recentSignalsAdapter);
 
-        AppComponent appComponent = Injector.INSTANCE.initializeAppComponent(this);
-        Injector.INSTANCE.initializeNetworkComponent(appComponent);
-        Injector.INSTANCE.initializeImageFetcherComponent(getApplicationContext());
-    }
 }

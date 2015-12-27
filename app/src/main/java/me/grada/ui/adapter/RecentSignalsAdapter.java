@@ -31,14 +31,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import me.grada.R;
+import me.grada.di.Injector;
 import me.grada.io.model.Signal;
 
 /**
@@ -46,12 +52,19 @@ import me.grada.io.model.Signal;
  */
 public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdapter.ViewHolder> {
 
+    @Inject
+    Picasso picasso;
+
     private List<Signal> signals = new ArrayList<>();
 
     /**
      * Index of the most recent rendered view.
      */
     private int lastRenderedView = -1;
+
+    public RecentSignalsAdapter() {
+        Injector.INSTANCE.getImageFetcherComponent().inject(this);
+    }
 
     public void setData(List<Signal> signals) {
         this.signals = signals;
@@ -67,7 +80,13 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.textView.setText(signals.get(position).getDescription());
+
+        final Signal signal = signals.get(position);
+
+        picasso.load(signal.getImages()[0]).into(holder.imageView);
+
+        // Populate the views
+        holder.descriptionView.setText(signal.getDescription());
 
         // Only animate the bottom view
         if (position > lastRenderedView) {
@@ -88,8 +107,11 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
         @Bind(R.id.card_view)
         CardView cardView;
 
-        @Bind(R.id.text)
-        TextView textView;
+        @Bind(R.id.image_view)
+        ImageView imageView;
+
+        @Bind(R.id.description)
+        TextView descriptionView;
 
         public ViewHolder(View itemView) {
             super(itemView);
