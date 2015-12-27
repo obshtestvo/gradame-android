@@ -24,10 +24,13 @@
 
 package me.grada.ui.adapter;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -45,6 +48,11 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
 
     private List<Signal> signals = new ArrayList<>();
 
+    /**
+     * Index of the most recent rendered view.
+     */
+    private int lastRenderedView = -1;
+
     public void setData(List<Signal> signals) {
         this.signals = signals;
         notifyDataSetChanged();
@@ -60,6 +68,14 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.textView.setText(signals.get(position).getDescription());
+
+        // Only animate the bottom view
+        if (position > lastRenderedView) {
+            Animation animation = AnimationUtils.loadAnimation(holder.cardView.getContext(),
+                    R.anim.default_recycler_view_anim);
+            holder.cardView.startAnimation(animation);
+            lastRenderedView = position;
+        }
     }
 
     @Override
@@ -68,6 +84,9 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.card_view)
+        CardView cardView;
 
         @Bind(R.id.text)
         TextView textView;
