@@ -22,19 +22,32 @@
  * SOFTWARE.
  */
 
-package me.grada.io.model;
+package me.grada.di.component;
+
+import android.app.Application;
+
+import com.squareup.otto.Bus;
+
+import javax.inject.Singleton;
+
+import dagger.Component;
+import me.grada.di.module.AppModule;
+import me.grada.ui.activity.HomeActivity;
 
 /**
+ * Base app component.  It's likely it will be used as a dependency / downstream component
+ * hence expose dependencies as you see fit.
+ *
  * Created by yavorivanov on 22/12/2015.
  */
-public class Signal {
+@Singleton
+@Component(modules = {AppModule.class})
+public interface AppComponent {
 
-    private String type;
-    private int status;
-    private String description;
-    private double[] location ;
-    private String address;
-    private String[] images;
-    private String dateCreated;
+    void inject(HomeActivity activity);
+
+    Application application();
+
+    Bus bus();
 
 }

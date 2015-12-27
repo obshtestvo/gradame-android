@@ -27,6 +27,8 @@
     <color name="colorPrimaryDark">@color/brown_900</color>
     <color name="colorAccent">@color/orange_600</color>
 
+    <color name="window_background">#FFEEEEEE</color>
+
     <color name="brown_600">#FF6D4C41</color>
     <color name="brown_900">#FF3E2723</color>
     <color name="orange_500">#FFFF9800</color>

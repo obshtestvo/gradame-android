@@ -22,29 +22,18 @@
  * SOFTWARE.
  */
 
-package me.grada.ui.fragment;
+package me.grada.di.scope;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import java.lang.annotation.Retention;
 
-import me.grada.R;
+import javax.inject.Scope;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 27/12/2015.
  */
-public class RecentListFragment extends Fragment {
-
-    public static RecentListFragment newInstance() {
-        return new RecentListFragment();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recent_list, container, false);
-    }
-
+@Scope
+@Retention(RUNTIME)
+public @interface PerTask {
 }

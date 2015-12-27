@@ -22,19 +22,29 @@
  * SOFTWARE.
  */
 
-package me.grada.io.model;
+package me.grada.ui.fragment;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import me.grada.R;
 
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class Signal {
+public class RecentSignalsFragment extends Fragment {
 
-    private String type;
-    private int status;
-    private String description;
-    private double[] location ;
-    private String address;
-    private String[] images;
-    private String dateCreated;
+    public static RecentSignalsFragment newInstance() {
+        return new RecentSignalsFragment();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_recent_signals, container, false);
+    }
 
 }

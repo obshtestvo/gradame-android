@@ -22,19 +22,25 @@
  * SOFTWARE.
  */
 
-package me.grada.io.model;
+package me.grada.io.event;
+
+import java.util.List;
+
+import me.grada.io.model.Signal;
 
 /**
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 23/12/2015.
  */
-public class Signal {
+public class GetSignalsSuccess {
 
-    private String type;
-    private int status;
-    private String description;
-    private double[] location ;
-    private String address;
-    private String[] images;
-    private String dateCreated;
+    private final List<Signal> signals;
+
+    public GetSignalsSuccess(List<Signal> signals) {
+        this.signals = signals;
+    }
+
+    public List<Signal> getSignals() {
+        return signals;
+    }
 
 }

@@ -24,12 +24,24 @@
 
 package me.grada.di.module;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import dagger.Module;
+import dagger.Provides;
 
 /**
  * Created by yavorivanov on 22/12/2015.
  */
 @Module
 public class GsonModule {
+
+    @Provides
+    public Gson providesGson() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
+        return gsonBuilder.create();
+    }
 
 }

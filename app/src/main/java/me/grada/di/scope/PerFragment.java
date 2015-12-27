@@ -22,19 +22,18 @@
  * SOFTWARE.
  */
 
-package me.grada.io.model;
+package me.grada.di.scope;
+
+import java.lang.annotation.Retention;
+
+import javax.inject.Scope;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 27/12/2015.
  */
-public class Signal {
-
-    private String type;
-    private int status;
-    private String description;
-    private double[] location ;
-    private String address;
-    private String[] images;
-    private String dateCreated;
-
+@Scope
+@Retention(RUNTIME)
+public @interface PerFragment {
 }

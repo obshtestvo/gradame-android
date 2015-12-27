@@ -24,13 +24,12 @@
 
 package me.grada.ui.adapter;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import me.grada.ui.fragment.NearbyMapFragment;
-import me.grada.ui.fragment.RecentListFragment;
+import me.grada.ui.fragment.NearbySingalsFragment;
+import me.grada.ui.fragment.RecentSignalsFragment;
 
 /**
  * Created by yavorivanov on 22/12/2015.
@@ -39,11 +38,9 @@ public class HomePageAdapter extends FragmentPagerAdapter {
 
     final int PAGE_COUNT = 2;
     private String tabTitles[] = new String[] { "Recent", "Nearby"};
-    private Context context;
 
-    public HomePageAdapter(FragmentManager fm, Context context) {
+    public HomePageAdapter(FragmentManager fm) {
         super(fm);
-        this.context = context;
     }
 
     @Override
@@ -54,9 +51,9 @@ public class HomePageAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return RecentListFragment.newInstance();
+            return RecentSignalsFragment.newInstance();
         }
-        return NearbyMapFragment.newInstance();
+        return NearbySingalsFragment.newInstance();
     }
 
     @Override

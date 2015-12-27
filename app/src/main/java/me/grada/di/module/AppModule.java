@@ -22,19 +22,44 @@
  * SOFTWARE.
  */
 
-package me.grada.io.model;
+package me.grada.di.module;
+
+import android.app.Application;
+
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
+
+import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
 
 /**
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 23/12/2015.
  */
-public class Signal {
+@Module
+@Singleton
+public class AppModule {
 
-    private String type;
-    private int status;
-    private String description;
-    private double[] location ;
-    private String address;
-    private String[] images;
-    private String dateCreated;
+    private final Application application;
+
+    private Bus bus;
+
+    public AppModule(Application application) {
+        this.application = application;
+    }
+
+    @Singleton
+    @Provides
+    public Application providesApplication() {
+        return application;
+    }
+
+    @Singleton
+    @Provides
+    public Bus providesEventBus() {
+        bus = new Bus(ThreadEnforcer.MAIN);
+        return bus;
+    }
 
 }

@@ -22,19 +22,23 @@
  * SOFTWARE.
  */
 
-package me.grada.io.model;
+package me.grada;
+
+import android.app.Application;
+
+import me.grada.di.Injector;
+import me.grada.di.component.AppComponent;
 
 /**
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 23/12/2015.
  */
-public class Signal {
+public class GradaMeApp extends Application {
 
-    private String type;
-    private int status;
-    private String description;
-    private double[] location ;
-    private String address;
-    private String[] images;
-    private String dateCreated;
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
+        AppComponent appComponent = Injector.INSTANCE.initializeAppComponent(this);
+        Injector.INSTANCE.initializeNetworkComponent(appComponent);
+    }
 }

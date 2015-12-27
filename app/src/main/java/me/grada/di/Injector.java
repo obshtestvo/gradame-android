@@ -22,19 +22,45 @@
  * SOFTWARE.
  */
 
-package me.grada.io.model;
+package me.grada.di;
+
+import android.app.Application;
+
+import me.grada.di.component.AppComponent;
+import me.grada.di.component.DaggerAppComponent;
+import me.grada.di.component.DaggerNetworkComponent;
+import me.grada.di.component.NetworkComponent;
+import me.grada.di.module.AppModule;
 
 /**
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 23/12/2015.
  */
-public class Signal {
+public enum Injector {
 
-    private String type;
-    private int status;
-    private String description;
-    private double[] location ;
-    private String address;
-    private String[] images;
-    private String dateCreated;
+    INSTANCE;
+
+    private AppComponent appComponent;
+    private NetworkComponent networkComponent;
+
+    public AppComponent initializeAppComponent(Application application) {
+        appComponent = DaggerAppComponent.builder()
+                .appModule(new AppModule(application))
+                .build();
+        return appComponent;
+    }
+
+    public void initializeNetworkComponent(AppComponent appComponent) {
+        networkComponent = DaggerNetworkComponent.builder()
+                .appComponent(appComponent)
+                .build();
+    }
+
+    public AppComponent getAppComponent() {
+        return appComponent;
+    }
+
+    public NetworkComponent getNetworkComponent() {
+        return networkComponent;
+    }
 
 }

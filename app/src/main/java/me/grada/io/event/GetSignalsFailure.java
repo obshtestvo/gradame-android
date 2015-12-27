@@ -22,19 +22,10 @@
  * SOFTWARE.
  */
 
-package me.grada.io.model;
+package me.grada.io.event;
 
 /**
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 23/12/2015.
  */
-public class Signal {
-
-    private String type;
-    private int status;
-    private String description;
-    private double[] location ;
-    private String address;
-    private String[] images;
-    private String dateCreated;
-
+public class GetSignalsFailure {
 }
