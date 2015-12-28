@@ -46,6 +46,7 @@ import butterknife.ButterKnife;
 import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.model.Signal;
+import me.grada.utils.DateTimeUtils;
 
 /**
  * Created by yavorivanov on 27/12/2015.
@@ -81,14 +82,17 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
+        // Populate the views
         final Signal signal = signals.get(position);
 
+        // Thumbnail
         picasso.load(signal.getImages()[0]).into(holder.imageView);
-
-        // Populate the views
+        // Description
         holder.descriptionView.setText(signal.getDescription());
+        // Elapsed time
+        holder.elapsedTime.setText(DateTimeUtils.getElapsedTime(signal.getDateCreated()));
 
-        // Only animate the bottom view
+        // Animate the bottom view (if it hasn't been animated)
         if (position > lastRenderedView) {
             Animation animation = AnimationUtils.loadAnimation(holder.cardView.getContext(),
                     R.anim.default_recycler_view_anim);
@@ -113,12 +117,13 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
         @Bind(R.id.description)
         TextView descriptionView;
 
+        @Bind(R.id.elapsed_time)
+        TextView elapsedTime;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-
-
     }
 
 }

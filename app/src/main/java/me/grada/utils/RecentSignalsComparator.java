@@ -22,41 +22,24 @@
  * SOFTWARE.
  */
 
-package me.grada;
+package me.grada.utils;
 
-import android.app.Application;
+import java.util.Comparator;
 
-import net.danlew.android.joda.JodaTimeAndroid;
-
-import javax.inject.Inject;
-
-import me.grada.di.Injector;
-import me.grada.di.component.AppComponent;
+import me.grada.io.model.Signal;
 
 /**
- * Created by yavorivanov on 23/12/2015.
+ * Created by yavorivanov on 28/12/2015.
  */
-public class GradaMeApp extends Application {
-
-    private static GradaMeApp sSelf;
-
-    public GradaMeApp() {
-        sSelf = this;
-    }
+public class RecentSignalsComparator implements Comparator<Signal> {
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-
-        JodaTimeAndroid.init(this);
-
-        AppComponent appComponent = Injector.INSTANCE.initializeAppComponent(this);
-        Injector.INSTANCE.initializeNetworkComponent(appComponent);
-        Injector.INSTANCE.initializeImageFetcherComponent(getApplicationContext());
-    }
-
-    public static GradaMeApp get() {
-        return sSelf;
+    public int compare(Signal lhs, Signal rhs) {
+        final long lhsTimestamp = DateTimeUtils.ISO_DATE_TIME_FORMATTER
+                .parseDateTime(lhs.getDateCreated()).getMillis();
+        final long rhsTimestamp = DateTimeUtils.ISO_DATE_TIME_FORMATTER
+                .parseDateTime(rhs.getDateCreated()).getMillis();
+        return (int) (rhsTimestamp - lhsTimestamp);
     }
 
 }

@@ -36,23 +36,38 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/list_item_height"
+        android:minHeight="@dimen/two_line_item_height"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/image_view"
             android:layout_width="72dp"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            />
+            android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/keyline_1_minus_8dp"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="@dimen/text_size_medium" />
+            android:minHeight="@dimen/two_line_item_height"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/keyline_1_minus_8dp">
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_item_primary"
+                android:textSize="@dimen/text_size_medium_2" />
+
+            <TextView
+                android:id="@+id/elapsed_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:textColor="@color/list_item_secondary"
+                android:textSize="@dimen/text_size_small" />
+
+        </FrameLayout>
 
     </LinearLayout>
 

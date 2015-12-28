@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,6 +45,7 @@ import javax.inject.Inject;
 import me.grada.di.Injector;
 import me.grada.io.event.GetSignalsSuccess;
 import me.grada.io.model.Signal;
+import me.grada.utils.RecentSignalsComparator;
 
 /**
  * Temporary task loading a bunch of mock signals from a local file.
@@ -70,7 +72,7 @@ public class GetSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
     protected List<Signal> doInBackground(Void... params) {
         // Mock network activity
         try {
-            Thread.sleep(1500);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -80,6 +82,9 @@ public class GetSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
             Type type = new TypeToken<ArrayList<Signal>>() {
             }.getType();
             ArrayList<Signal> signals = gson.fromJson(IOUtils.toString(is), type);
+            // Order the signals whilst on the worker thread
+            Collections.sort(signals, new RecentSignalsComparator());
+
             return signals;
         } catch (IOException e) {
             e.printStackTrace();

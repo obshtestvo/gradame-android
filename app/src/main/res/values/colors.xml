@@ -34,4 +34,8 @@
     <color name="orange_500">#FFFF9800</color>
     <color name="orange_600">#FFFB8C00</color>
     <color name="orange_700">#FFF57C00</color>
+
+    <color name="list_item_primary">#FF212121</color>
+    <color name="list_item_secondary">#FFE0E0E0</color>
+
 </resources>

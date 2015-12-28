@@ -38,7 +38,11 @@
     <dimen name="keyline_1_minus_8dp">8dp</dimen>
     <dimen name="keyline_2">72dp</dimen>
     <dimen name="keyline_2_minus_16dp">56dp</dimen>
-    <dimen name="list_item_height">72dp</dimen>
+
+    <!-- List view -->
+    <dimen name="single_line_item_height">48dp</dimen>
+    <dimen name="single_line_item_with_avatar_height">56dp</dimen>
+    <dimen name="two_line_item_height">56dp</dimen>
 
     <dimen name="text_size_xxsmall">8sp</dimen>
     <dimen name="text_size_xsmall">10sp</dimen>

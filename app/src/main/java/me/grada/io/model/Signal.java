@@ -41,27 +41,55 @@ public class Signal {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public int getStatus() {
         return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public double[] getLocation() {
         return location;
+    }
+
+    public void setLocation(double[] location) {
+        this.location = location;
     }
 
     public String getAddress() {
         return address;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String[] getImages() {
         return images;
     }
 
+    public void setImages(String[] images) {
+        this.images = images;
+    }
+
     public String getDateCreated() {
         return dateCreated;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
     }
 }
