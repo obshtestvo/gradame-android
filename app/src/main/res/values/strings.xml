@@ -30,5 +30,21 @@
 
     <string name="action_settings">Settings</string>
     <string name="just_now">Just now</string>
+    <string name="about_me_notice">%1$s uses the following open source libraries:</string>
+    <string name="third_party_licenses">
+        &lt;br&#47;&gt;&lt;a href="http://developer.android.com/license.html">com.android.support:appcompat-v7:23.1.1&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="http://developer.android.com/license.html">com.android.support:design:23.1.1&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="http://developer.android.com/license.html">com.android.support:cardview-v7:23.0.1&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="http://developer.android.com/license.html">com.android.support:recyclerview-v7:23.1.1&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="http://developer.android.com/license.html">com.google.android.gms:play-services-maps:8.4.0&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="https://raw.githubusercontent.com/google/gson/master/LICENSE">com.google.code.gson:gson:2.5&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="https://raw.githubusercontent.com/google/dagger/master/LICENSE.txt">com.google.dagger:dagger:2.0.1&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="https://raw.githubusercontent.com/square/otto/master/LICENSE.txt">com.squareup:otto:1.3.8&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="https://raw.githubusercontent.com/square/picasso/master/LICENSE.txt">com.squareup.picasso:picasso:2.5.2&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="http://www.apache.org/licenses/LICENSE-2.0">commons-io:commons-io:1.3.2&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="https://raw.githubusercontent.com/dlew/joda-time-android/master/LICENSE">net.danlew:android.joda:2.9.1&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="http://www.apache.org/licenses/LICENSE-2.0">com.squareup:fest-android:1.0.8&lt;/a>
+        &lt;br&#47;&gt;&lt;a href="http://junit.org/license.html">junit:junit:4.12&lt;/a>
+    </string>
 
 </resources>
