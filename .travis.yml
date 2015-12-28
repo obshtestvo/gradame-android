@@ -16,4 +16,5 @@ android:
     # System image for running Android (integration) tests
     - sys-img-armeabi-v7a-android-21
 script:
+  - ./gradlew testDebugUnitTest
   - ./gradlew assembleDebug
