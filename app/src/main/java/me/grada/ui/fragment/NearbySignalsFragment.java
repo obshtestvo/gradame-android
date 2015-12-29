@@ -26,6 +26,7 @@ package me.grada.ui.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -37,6 +38,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,6 +48,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -60,9 +65,12 @@ import me.grada.utils.ViewUtils;
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCallback {
+public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int LOCATION_PERMISSION_REQUEST = 1;
+
+    private static final String LOCATION_PERMISSION_TYPE = Manifest.permission.ACCESS_FINE_LOCATION;
 
     @Inject
     Bus bus;
@@ -77,6 +85,10 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
      * Used as a prompt for granting location permission on >= Marshmallow
      */
     private Snackbar snackbar;
+
+    private GoogleMap googleMap;
+
+    private GoogleApiClient googleApiClient;
 
     public static NearbySignalsFragment newInstance() {
         return new NearbySignalsFragment();
@@ -109,6 +121,9 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     public void onStart() {
         super.onStart();
         bus.register(this);
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
     }
 
     @Override
@@ -120,6 +135,9 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     @Override
     public void onStop() {
         bus.unregister(this);
+        if (googleApiClient != null) {
+            googleApiClient.disconnect();
+        }
         super.onStop();
     }
 
@@ -137,6 +155,7 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         // Updates the location and zoom of the MapView
         CameraUpdate cameraUpdate = CameraUpdateFactory
@@ -152,7 +171,8 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         if (requestCode == LOCATION_PERMISSION_REQUEST) {
             // Received the permission for the location provider
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // TODO: Get location fix
+                // Connect to Play Services Location API in order to get a location fix
+                connectToLocationServices();
             } else {
                 // Permission denied, we can't use the location provider
                 // Determine if the user has ticked 'Never ask again'
@@ -168,28 +188,40 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     }
 
     @Subscribe
-    public void onNearbySignalsSelected(NearbySignalsInForeground event) {
+    public void onNearbySignalsInForeground(NearbySignalsInForeground event) {
         getLocationPermission();
     }
 
     @Subscribe
-    public void onNearbySignalsSelected(NearbySignalsInBackground event) {
+    public void onNearbySignalsInBackground(NearbySignalsInBackground event) {
         // Hide the snackbar, if present
         if (snackbar != null) {
             snackbar.dismiss();
         }
+
+        if (googleApiClient != null) {
+            googleApiClient.disconnect();
+        }
+    }
+
+    private boolean hasLocationPermission() {
+        return (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
     }
 
     private void getLocationPermission() {
         // Check if the target is Marshmallow, or newer, and proceed
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                // TODO: Get location fix
+            if (ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSION_TYPE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                // Connect to Play Services Location API in order to get a location fix
+                connectToLocationServices();
             } else {
                 // Request permission to use location providers
                 if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        LOCATION_PERMISSION_TYPE)) {
                     showLocationPermissionRationale();
                     // TODO: Explain why the permission is needed (occurs after previous rejection)
                 } else {
@@ -218,9 +250,49 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
      * Shows the standard Android dialog view prompting for location permission
      */
     private void promptLocationPermission() {
-        ActivityCompat.requestPermissions(getActivity(),
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+        ActivityCompat.requestPermissions(getActivity(), new String[]{LOCATION_PERMISSION_TYPE},
                 LOCATION_PERMISSION_REQUEST);
     }
 
+    private void connectToLocationServices() {
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(getActivity())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        googleApiClient.connect();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSION_TYPE)
+                != PackageManager.PERMISSION_GRANTED) {
+            getLocationPermission();
+            return;
+        }
+        Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+        final double lat = location.getLatitude();
+        final double lng = location.getLongitude();
+
+        googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(lat, lng))
+                .title("Your location"));
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory
+                .newLatLngZoom(new LatLng(lat, lng), 15);
+        googleMap.animateCamera(cameraUpdate);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // TODO: Handle error
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        // TODO: Handle error
+    }
 }
