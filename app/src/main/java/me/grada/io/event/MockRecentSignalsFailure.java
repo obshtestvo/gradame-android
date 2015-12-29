@@ -24,23 +24,8 @@
 
 package me.grada.io.event;
 
-import java.util.List;
-
-import me.grada.io.model.Signal;
-
 /**
  * Created by yavorivanov on 23/12/2015.
  */
-public class GetSignalsSuccess {
-
-    private final List<Signal> signals;
-
-    public GetSignalsSuccess(List<Signal> signals) {
-        this.signals = signals;
-    }
-
-    public List<Signal> getSignals() {
-        return signals;
-    }
-
+public class MockRecentSignalsFailure {
 }

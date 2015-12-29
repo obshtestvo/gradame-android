@@ -41,9 +41,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import me.grada.R;
 import me.grada.di.Injector;
-import me.grada.io.event.GetSignalsFailure;
-import me.grada.io.event.GetSignalsSuccess;
-import me.grada.io.task.GetSignalsTask;
+import me.grada.io.event.MockRecentSignalsFailure;
+import me.grada.io.event.MockRecentSignalsSuccess;
+import me.grada.io.task.MockRecentSignalsTask;
 import me.grada.ui.adapter.RecentSignalsAdapter;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
@@ -94,7 +94,7 @@ public class RecentSignalsFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
         bus.register(this);
-        new GetSignalsTask().execute();
+        new MockRecentSignalsTask().execute();
     }
 
     @Override
@@ -104,13 +104,13 @@ public class RecentSignalsFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void onGetSignalsSuccess(GetSignalsSuccess event) {
+    public void onGetSignalsSuccess(MockRecentSignalsSuccess event) {
         ViewUtils.animateOut(progressView);
         recentSignalsAdapter.setData(event.getSignals());
     }
 
     @Subscribe
-    public void onGetSignalsFailure(GetSignalsFailure event) {
+    public void onGetSignalsFailure(MockRecentSignalsFailure event) {
         Toast.makeText(getActivity(), "TODO: Handle error", Toast.LENGTH_SHORT).show();
         ViewUtils.animateOut(progressView);
     }

@@ -43,7 +43,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import me.grada.di.Injector;
-import me.grada.io.event.GetSignalsSuccess;
+import me.grada.io.event.MockRecentSignalsSuccess;
 import me.grada.io.model.Signal;
 import me.grada.utils.RecentSignalsComparator;
 
@@ -52,7 +52,7 @@ import me.grada.utils.RecentSignalsComparator;
  * <p/>
  * Created by yavorivanov on 23/12/2015.
  */
-public class GetSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
+public class MockRecentSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
 
     @Inject
     Application application;
@@ -64,7 +64,7 @@ public class GetSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
     Gson gson;
 
     @Inject
-    public GetSignalsTask() {
+    public MockRecentSignalsTask() {
         Injector.INSTANCE.getNetworkComponent().inject(this);
     }
 
@@ -78,7 +78,7 @@ public class GetSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
         }
 
         try {
-            InputStream is = application.getAssets().open("json/mock_signals.json");
+            InputStream is = application.getAssets().open("json/mock_recent_signals.json");
             Type type = new TypeToken<ArrayList<Signal>>() {
             }.getType();
             ArrayList<Signal> signals = gson.fromJson(IOUtils.toString(is), type);
@@ -94,6 +94,6 @@ public class GetSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
 
     @Override
     protected void onPostExecute(List<Signal> signals) {
-        bus.post(new GetSignalsSuccess(signals));
+        bus.post(new MockRecentSignalsSuccess(signals));
     }
 }

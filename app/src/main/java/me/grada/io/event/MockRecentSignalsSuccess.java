@@ -22,24 +22,25 @@
  * SOFTWARE.
  */
 
-package me.grada.di.component;
+package me.grada.io.event;
 
-import dagger.Component;
-import me.grada.di.module.GsonModule;
-import me.grada.di.module.NetworkModule;
-import me.grada.di.scope.PerTask;
-import me.grada.io.task.MockNearbySignalsTask;
-import me.grada.io.task.MockRecentSignalsTask;
+import java.util.List;
+
+import me.grada.io.model.Signal;
 
 /**
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 23/12/2015.
  */
-@PerTask
-@Component(modules = {NetworkModule.class, GsonModule.class}, dependencies = {AppComponent.class})
-public interface NetworkComponent {
+public class MockRecentSignalsSuccess {
 
-    void inject(MockRecentSignalsTask task);
+    private final List<Signal> signals;
 
-    void inject(MockNearbySignalsTask task);
+    public MockRecentSignalsSuccess(List<Signal> signals) {
+        this.signals = signals;
+    }
+
+    public List<Signal> getSignals() {
+        return signals;
+    }
 
 }
