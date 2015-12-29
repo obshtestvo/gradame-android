@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -51,7 +52,8 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import me.grada.R;
 import me.grada.di.Injector;
-import me.grada.io.event.NearbySignalsSelected;
+import me.grada.io.event.NearbySignalsInBackground;
+import me.grada.io.event.NearbySignalsInForeground;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
 
@@ -70,6 +72,11 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
 
     @Bind(R.id.map_view)
     MapView mapView;
+
+    /**
+     * Used as a prompt for granting location permission on >= Marshmallow
+     */
+    private Snackbar snackbar;
 
     public static NearbySignalsFragment newInstance() {
         return new NearbySignalsFragment();
@@ -148,18 +155,33 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
                 // TODO: Get location fix
             } else {
                 // Permission denied, we can't use the location provider
-                // Notify the user they won't be able to see nearby signals
-                // TODO: Explain why the permission is needed
+                // Determine if the user has ticked 'Never ask again'
+                boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
+                if (showRationale) {
+                    showLocationPermissionRationale();
+                } else {
+                    // TODO: Replace the MapView with an in-line error to indicate that
+                    // the functionality doesn't work without the location service enabled
+                }
             }
         }
     }
 
     @Subscribe
-    public void onNearbySignalsSelected(NearbySignalsSelected event) {
+    public void onNearbySignalsSelected(NearbySignalsInForeground event) {
         getLocationPermission();
     }
 
+    @Subscribe
+    public void onNearbySignalsSelected(NearbySignalsInBackground event) {
+        // Hide the snackbar, if present
+        if (snackbar != null) {
+            snackbar.dismiss();
+        }
+    }
+
     private void getLocationPermission() {
+        // Check if the target is Marshmallow, or newer, and proceed
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -168,17 +190,37 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
                 // Request permission to use location providers
                 if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                         Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    showLocationPermissionRationale();
                     // TODO: Explain why the permission is needed (occurs after previous rejection)
                 } else {
-                    // Show the standard Android dialog view
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            LOCATION_PERMISSION_REQUEST);
+                    promptLocationPermission();
                 }
             }
-        } else {
-            // Running on < Marshmallow; no need to request the permission
         }
+    }
+
+    /**
+     * Shows a {@link Snackbar} asking the user to enable location services.
+     */
+    private void showLocationPermissionRationale() {
+        snackbar = Snackbar.make(getView(), getString(R.string.nearby_location_permission_rationale),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(R.string.enable_location), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        promptLocationPermission();
+                    }
+                });
+        snackbar.show();
+    }
+
+    /**
+     * Shows the standard Android dialog view prompting for location permission
+     */
+    private void promptLocationPermission() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                LOCATION_PERMISSION_REQUEST);
     }
 
 }

@@ -40,13 +40,16 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import me.grada.R;
 import me.grada.di.Injector;
-import me.grada.io.event.NearbySignalsSelected;
+import me.grada.io.event.NearbySignalsInBackground;
+import me.grada.io.event.NearbySignalsInForeground;
 import me.grada.ui.adapter.HomePageAdapter;
 
 /**
  * Created by yavorivanov on 28/12/2015.
  */
 public class HomeFragment extends BaseFragment {
+
+    private static final int NEARBY_PAGE_INDEX = 1;
 
     @Inject
     Bus bus;
@@ -86,7 +89,11 @@ public class HomeFragment extends BaseFragment {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                bus.post(new NearbySignalsSelected());
+                if (position == NEARBY_PAGE_INDEX) {
+                    bus.post(new NearbySignalsInForeground());
+                } else {
+                    bus.post(new NearbySignalsInBackground());
+                }
             }
         });
 

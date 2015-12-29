@@ -27,5 +27,5 @@ package me.grada.io.event;
 /**
  * Created by yavorivanov on 29/12/2015.
  */
-public class NearbySignalsSelected {
+public class NearbySignalsInBackground {
 }
