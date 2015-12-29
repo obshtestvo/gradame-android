@@ -22,29 +22,16 @@
  * SOFTWARE.
  */
 
-package me.grada.ui.fragment;
+package me.grada.ui.activity;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.List;
 
-import butterknife.ButterKnife;
-
-/**
- * Created by yavorivanov on 27/12/2015.
- */
-public abstract class BaseFragment extends Fragment {
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(this, view);
-    }
+public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * Overriding the permission callback in the base fragment due to a bug in Android
@@ -54,9 +41,9 @@ public abstract class BaseFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        FragmentManager childFragmentManager = getChildFragmentManager();
-        if (childFragmentManager != null) {
-            List<Fragment> fragments = childFragmentManager.getFragments();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager != null) {
+            List<Fragment> fragments = fragmentManager.getFragments();
             if (fragments != null) {
                 for (Fragment fragment : fragments) {
                     fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);

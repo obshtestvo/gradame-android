@@ -33,14 +33,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import me.grada.R;
+import me.grada.di.Injector;
+import me.grada.io.event.NearbySignalsSelected;
 import me.grada.ui.adapter.HomePageAdapter;
 
 /**
  * Created by yavorivanov on 28/12/2015.
  */
 public class HomeFragment extends BaseFragment {
+
+    @Inject
+    Bus bus;
 
     @Bind(R.id.view_pager)
     ViewPager viewPager;
@@ -56,6 +65,12 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Injector.INSTANCE.getAppComponent().inject(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
@@ -67,6 +82,13 @@ public class HomeFragment extends BaseFragment {
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         viewPager.setAdapter(new HomePageAdapter(getChildFragmentManager()));
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                bus.post(new NearbySignalsSelected());
+            }
+        });
 
         // Give the TabLayout the ViewPager
         tabLayout.setupWithViewPager(viewPager);

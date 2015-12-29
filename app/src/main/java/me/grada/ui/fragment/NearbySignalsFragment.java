@@ -24,8 +24,14 @@
 
 package me.grada.ui.fragment;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,9 +43,15 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import me.grada.R;
+import me.grada.di.Injector;
+import me.grada.io.event.NearbySignalsSelected;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
 
@@ -47,6 +59,11 @@ import me.grada.utils.ViewUtils;
  * Created by yavorivanov on 22/12/2015.
  */
 public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCallback {
+
+    private static final int LOCATION_PERMISSION_REQUEST = 1;
+
+    @Inject
+    Bus bus;
 
     @Bind(R.id.progress_view)
     MaterialProgressView progressView;
@@ -56,6 +73,12 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
 
     public static NearbySignalsFragment newInstance() {
         return new NearbySignalsFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Injector.INSTANCE.getAppComponent().inject(this);
     }
 
     @Override
@@ -76,9 +99,21 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        bus.register(this);
+    }
+
+    @Override
     public void onResume() {
-        mapView.onResume();
         super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        bus.unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -102,4 +137,48 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         googleMap.animateCamera(cameraUpdate);
         ViewUtils.animateOut(progressView);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST) {
+            // Received the permission for the location provider
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // TODO: Get location fix
+            } else {
+                // Permission denied, we can't use the location provider
+                // Notify the user they won't be able to see nearby signals
+                // TODO: Explain why the permission is needed
+            }
+        }
+    }
+
+    @Subscribe
+    public void onNearbySignalsSelected(NearbySignalsSelected event) {
+        getLocationPermission();
+    }
+
+    private void getLocationPermission() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                // TODO: Get location fix
+            } else {
+                // Request permission to use location providers
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    // TODO: Explain why the permission is needed (occurs after previous rejection)
+                } else {
+                    // Show the standard Android dialog view
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            LOCATION_PERMISSION_REQUEST);
+                }
+            }
+        } else {
+            // Running on < Marshmallow; no need to request the permission
+        }
+    }
+
 }

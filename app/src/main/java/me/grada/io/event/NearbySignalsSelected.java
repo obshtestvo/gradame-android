@@ -22,38 +22,10 @@
  * SOFTWARE.
  */
 
-package me.grada.di.component;
-
-import android.app.Application;
-
-import com.squareup.otto.Bus;
-
-import javax.inject.Singleton;
-
-import dagger.Component;
-import me.grada.di.module.AppModule;
-import me.grada.ui.fragment.HomeFragment;
-import me.grada.ui.fragment.NearbySignalsFragment;
-import me.grada.ui.fragment.RecentSignalsFragment;
+package me.grada.io.event;
 
 /**
- * Base app component.  It's likely it will be used as a dependency / downstream component
- * hence expose dependencies as you see fit.
- *
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 29/12/2015.
  */
-@Singleton
-@Component(modules = {AppModule.class})
-public interface AppComponent {
-
-    void inject(HomeFragment homeFragment);
-
-    void inject(RecentSignalsFragment recentSignalsFragment);
-
-    void inject(NearbySignalsFragment nearbySignalsFragment);
-
-    Application application();
-
-    Bus bus();
-
+public class NearbySignalsSelected {
 }
