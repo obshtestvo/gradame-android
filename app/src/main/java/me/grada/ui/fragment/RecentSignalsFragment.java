@@ -24,6 +24,7 @@
 
 package me.grada.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -43,7 +44,9 @@ import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.event.MockRecentSignalsFailure;
 import me.grada.io.event.MockRecentSignalsSuccess;
+import me.grada.io.model.Signal;
 import me.grada.io.task.MockRecentSignalsTask;
+import me.grada.ui.activity.SignalActivity;
 import me.grada.ui.adapter.RecentSignalsAdapter;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
@@ -51,7 +54,8 @@ import me.grada.utils.ViewUtils;
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class RecentSignalsFragment extends BaseFragment {
+public class RecentSignalsFragment extends BaseFragment
+        implements RecentSignalsAdapter.OnClickListener  {
 
     @Inject
     Bus bus;
@@ -88,6 +92,7 @@ public class RecentSignalsFragment extends BaseFragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(recentSignalsAdapter = new RecentSignalsAdapter());
+        recentSignalsAdapter.setOnClickListener(this);
     }
 
     @Override
@@ -113,6 +118,11 @@ public class RecentSignalsFragment extends BaseFragment {
     public void onGetSignalsFailure(MockRecentSignalsFailure event) {
         Toast.makeText(getActivity(), "TODO: Handle error", Toast.LENGTH_SHORT).show();
         ViewUtils.animateOut(progressView);
+    }
+
+    @Override
+    public void onClick(Signal signal) {
+        startActivity(new Intent(getActivity(), SignalActivity.class));
     }
 
 }

@@ -43,6 +43,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.model.Signal;
@@ -53,8 +54,16 @@ import me.grada.utils.DateTimeUtils;
  */
 public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdapter.ViewHolder> {
 
+    public interface OnClickListener {
+
+        void onClick(Signal signal);
+
+    }
+
     @Inject
     Picasso picasso;
+
+    private OnClickListener onClickListener;
 
     private List<Signal> signals = new ArrayList<>();
 
@@ -70,6 +79,10 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
     public void setData(List<Signal> signals) {
         this.signals = signals;
         notifyDataSetChanged();
+    }
+
+    public void setOnClickListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
     }
 
     @Override
@@ -106,7 +119,7 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
         return signals.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.card_view)
         CardView cardView;
@@ -124,6 +137,14 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+
+        @OnClick(R.id.card_view)
+        public void onClick(View view) {
+            if (onClickListener != null) {
+                onClickListener.onClick(signals.get(getLayoutPosition()));
+            }
+        }
+
     }
 
 }
