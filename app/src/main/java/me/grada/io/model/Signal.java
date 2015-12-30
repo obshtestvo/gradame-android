@@ -24,10 +24,13 @@
 
 package me.grada.io.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class Signal {
+public class Signal implements Parcelable {
 
     private String type;
     private int status;
@@ -36,6 +39,30 @@ public class Signal {
     private String address;
     private String[] images;
     private String dateCreated;
+
+    public Signal(){}
+
+    public Signal(Parcel in) {
+        type = in.readString();
+        status = in.readInt();
+        description = in.readString();
+        location = in.createDoubleArray();
+        address = in.readString();
+        images = in.createStringArray();
+        dateCreated = in.readString();
+    }
+
+    public static final Creator<Signal> CREATOR = new Creator<Signal>() {
+        @Override
+        public Signal createFromParcel(Parcel in) {
+            return new Signal(in);
+        }
+
+        @Override
+        public Signal[] newArray(int size) {
+            return new Signal[size];
+        }
+    };
 
     public String getType() {
         return type;
@@ -91,5 +118,21 @@ public class Signal {
 
     public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(type);
+        dest.writeInt(status);
+        dest.writeString(description);
+        dest.writeDoubleArray(location);
+        dest.writeString(address);
+        dest.writeStringArray(images);
+        dest.writeString(dateCreated);
     }
 }
