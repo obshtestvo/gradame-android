@@ -210,7 +210,13 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
 
     @Subscribe
     public void onNearbySignalsInForeground(NearbySignalsInForeground event) {
-        getLocationPermission();
+        // Ask for location permission if the target is Marshmallow or newer
+        // else connect to Play Services Location API in order to get a location fix
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            getLocationPermission();
+        } else {
+            connectToLocationServices();
+        }
     }
 
     @Subscribe
@@ -254,6 +260,7 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     public void onMockNearbySignalsFailure(MockNearbySignalsFailure event) {
         // TODO: Handle error
     }
+
     private void getLocationPermission() {
         // Check if the target is Marshmallow, or newer, and proceed
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
