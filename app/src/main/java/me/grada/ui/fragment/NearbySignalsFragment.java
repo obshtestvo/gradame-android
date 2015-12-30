@@ -48,7 +48,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -156,11 +155,23 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        // Updates the location and zoom of the MapView
-        CameraUpdate cameraUpdate = CameraUpdateFactory
-                .newLatLngZoom(new LatLng(42.6603369, 23.283244), 12);
-        googleMap.animateCamera(cameraUpdate);
+
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        final int mapPadding = getResources().getDimensionPixelSize(R.dimen.keyline_1);
+        final int rightPadding = getResources().getDimensionPixelSize(R.dimen.map_view_right_padding);
+        final int fabSize = getResources().getDimensionPixelSize(R.dimen.design_fab_size_normal);
+        final int bottomPadding = fabSize + mapPadding;
+        googleMap.setPadding(0, 0, rightPadding, bottomPadding);
+
+        googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                return showLastKnownLocation();
+
+            }
+        });
+
         ViewUtils.animateOut(progressView);
     }
 
@@ -202,13 +213,6 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         if (googleApiClient != null) {
             googleApiClient.disconnect();
         }
-    }
-
-    private boolean hasLocationPermission() {
-        return (ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
     }
 
     private void getLocationPermission() {
@@ -267,23 +271,37 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        showLastKnownLocation();
+    }
+
+    /**
+     * Moves the map to the device's last known location, if available, and if the location
+     * permission has been granted.
+     *
+     * @return True if the last known location was successfully shown, false otherwise.
+     */
+    private boolean showLastKnownLocation() {
         if (ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSION_TYPE)
                 != PackageManager.PERMISSION_GRANTED) {
             getLocationPermission();
-            return;
+            return false;
         }
+
+        googleMap.setMyLocationEnabled(true);
+
         Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
-        final double lat = location.getLatitude();
-        final double lng = location.getLongitude();
+        // The odd case when the device doesn't have a last known location
+        // Ignore for now, you only hit this case on the emulator
+        if (location == null) return false;
 
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(lat, lng))
-                .title("Your location"));
+        final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         CameraUpdate cameraUpdate = CameraUpdateFactory
-                .newLatLngZoom(new LatLng(lat, lng), 15);
+                .newLatLngZoom(latLng, 16);
         googleMap.animateCamera(cameraUpdate);
+
+        return true;
     }
 
     @Override
