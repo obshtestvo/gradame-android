@@ -3,7 +3,7 @@
     "type": "Улична дупка",
     "status": 0,
     "user": "Явор Иванов",
-    "description": "Улична дупка на бул. България",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "location": [
       42.6603369,
       23.283244
@@ -18,7 +18,7 @@
     "type": "Липсваща шахта",
     "status": 0,
     "user": "Явор Иванов",
-    "description": "Липсваща шахта на улица Тодор Каблешков",
+    "description": "Lorem ipsum dolor sit amet.",
     "location": [
       42.663515,
       23.291516

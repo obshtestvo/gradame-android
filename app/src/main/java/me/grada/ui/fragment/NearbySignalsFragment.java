@@ -48,16 +48,26 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import me.grada.R;
 import me.grada.di.Injector;
+import me.grada.io.event.MockNearbySignalsFailure;
+import me.grada.io.event.MockNearbySignalsSuccess;
 import me.grada.io.event.NearbySignalsInBackground;
 import me.grada.io.event.NearbySignalsInForeground;
+import me.grada.io.model.Signal;
+import me.grada.io.task.MockNearbySignalsTask;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
 
@@ -215,6 +225,35 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         }
     }
 
+    @Subscribe
+    public void onMockNearbySignalsSuccess(MockNearbySignalsSuccess event) {
+        // Add the markers to the map
+        List<Signal> signalList = event.getSignals();
+        List<Marker> markerList = new ArrayList<>(signalList.size());
+
+        for (Signal signal : signalList) {
+            Marker marker = googleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(signal.getLocation()[0], signal.getLocation()[1]))
+                    .title(signal.getDescription()));
+            markerList.add(marker);
+        }
+
+        // Calculate the bounds of all nearby signals
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Marker marker : markerList) {
+            builder.include(marker.getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+
+        int padding = getResources().getDimensionPixelSize(R.dimen.keyline_1);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 2 * padding);
+        googleMap.animateCamera(cameraUpdate);
+    }
+
+    @Subscribe
+    public void onMockNearbySignalsFailure(MockNearbySignalsFailure event) {
+        // TODO: Handle error
+    }
     private void getLocationPermission() {
         // Check if the target is Marshmallow, or newer, and proceed
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -272,6 +311,9 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         showLastKnownLocation();
+
+        // TODO: Replace with a network call to fetch nearby signals using LatLng of last known loc
+        new MockNearbySignalsTask().execute();
     }
 
     /**

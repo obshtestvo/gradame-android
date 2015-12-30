@@ -3,8 +3,7 @@
     "type": "Нерегламентиран боклук",
     "status": 0,
     "user": "Явор Иванов",
-    "description": "Изоставени мебели в близост до блока",
-    "description": "Изоставени мебели в близост до блока",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "location": [
       51.4572096,
       0.0307911
@@ -12,6 +11,21 @@
     "address": "2 Ottley Drive",
     "images": [
       "http://li.zoocdn.com/f093057a3b46b7018e9bc670fd31ae768fd0e37e_645_430.jpg"
+    ],
+    "date_created": "2015-12-29T12:00:00+0000"
+  },
+  {
+    "type": "Улична дупка",
+    "status": 0,
+    "user": "Явор Иванов",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "location": [
+      51.459193,
+      0.023768
+    ],
+    "address": "Handley Drive",
+    "images": [
+      "http://www.bartonwillmore.co.uk/wp-content/uploads/2015/05/vb104452_z386_ext_020-small.jpg"
     ],
     "date_created": "2015-12-29T12:00:00+0000"
   }
