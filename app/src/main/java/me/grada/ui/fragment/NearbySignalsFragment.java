@@ -25,6 +25,7 @@
 package me.grada.ui.fragment;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -55,7 +56,9 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -68,6 +71,7 @@ import me.grada.io.event.NearbySignalsInBackground;
 import me.grada.io.event.NearbySignalsInForeground;
 import me.grada.io.model.Signal;
 import me.grada.io.task.MockNearbySignalsTask;
+import me.grada.ui.activity.SignalActivity;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
 
@@ -98,6 +102,8 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     private GoogleMap googleMap;
 
     private GoogleApiClient googleApiClient;
+
+    private Map<Marker, Signal> markerSignalMap = new HashMap<>();
 
     public static NearbySignalsFragment newInstance() {
         return new NearbySignalsFragment();
@@ -182,6 +188,15 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
             }
         });
 
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Intent intent = new Intent(getActivity(), SignalActivity.class);
+                intent.putExtra(SignalActivity.SIGNAL, markerSignalMap.get(marker));
+                startActivity(intent);
+            }
+        });
+
         ViewUtils.animateOut(progressView);
     }
 
@@ -237,11 +252,13 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         List<Signal> signalList = event.getSignals();
         List<Marker> markerList = new ArrayList<>(signalList.size());
 
-        for (Signal signal : signalList) {
+        for (int i = 0; i < signalList.size(); i++) {
+            Signal signal = signalList.get(i);
             Marker marker = googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(signal.getLocation()[0], signal.getLocation()[1]))
-                    .title(signal.getDescription()));
+                    .title(signal.getTitle()));
             markerList.add(marker);
+            markerSignalMap.put(marker, signal);
         }
 
         // Calculate the bounds of all nearby signals
