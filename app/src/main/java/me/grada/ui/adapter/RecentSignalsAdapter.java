@@ -101,7 +101,7 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
         // Thumbnail
         picasso.load(signal.getImages()[0]).into(holder.imageView);
         // Description
-        holder.descriptionView.setText(signal.getDescription());
+        holder.titleView.setText(signal.getTitle());
         // Elapsed time
         holder.elapsedTime.setText(DateTimeUtils.getElapsedTime(signal.getDateCreated()));
 
@@ -124,11 +124,11 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
         @Bind(R.id.card_view)
         CardView cardView;
 
-        @Bind(R.id.image_view)
+        @Bind(R.id.image)
         ImageView imageView;
 
-        @Bind(R.id.description)
-        TextView descriptionView;
+        @Bind(R.id.title)
+        TextView titleView;
 
         @Bind(R.id.elapsed_time)
         TextView elapsedTime;

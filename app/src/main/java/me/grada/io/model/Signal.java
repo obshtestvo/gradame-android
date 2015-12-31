@@ -34,17 +34,20 @@ public class Signal implements Parcelable {
 
     private String type;
     private int status;
+    private String title;
     private String description;
-    private double[] location ;
+    private double[] location;
     private String address;
     private String[] images;
     private String dateCreated;
 
-    public Signal(){}
+    public Signal() {
+    }
 
     public Signal(Parcel in) {
         type = in.readString();
         status = in.readInt();
+        title = in.readString();
         description = in.readString();
         location = in.createDoubleArray();
         address = in.readString();
@@ -78,6 +81,14 @@ public class Signal implements Parcelable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -129,6 +140,7 @@ public class Signal implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(type);
         dest.writeInt(status);
+        dest.writeString(title);
         dest.writeString(description);
         dest.writeDoubleArray(location);
         dest.writeString(address);
@@ -136,3 +148,4 @@ public class Signal implements Parcelable {
         dest.writeString(dateCreated);
     }
 }
+

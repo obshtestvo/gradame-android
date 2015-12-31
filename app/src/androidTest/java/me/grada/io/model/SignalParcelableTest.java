@@ -44,6 +44,7 @@ public class SignalParcelableTest extends AndroidTestCase {
 
         expectedSignal = new Signal();
         expectedSignal.setDateCreated("dateCreated");
+        expectedSignal.setTitle("title");
         expectedSignal.setDescription("description");
         expectedSignal.setAddress("address");
         expectedSignal.setImages(new String[]{"image"});
@@ -61,6 +62,11 @@ public class SignalParcelableTest extends AndroidTestCase {
     @SmallTest
     public void testDateCreated() {
         assertThat(expectedSignal.getDateCreated()).isEqualTo(actualSignal.getDateCreated());
+    }
+
+    @SmallTest
+    public void testTitle() {
+        assertThat(expectedSignal.getTitle()).isEqualTo(actualSignal.getTitle());
     }
 
     @SmallTest

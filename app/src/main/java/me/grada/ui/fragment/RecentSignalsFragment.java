@@ -122,7 +122,9 @@ public class RecentSignalsFragment extends BaseFragment
 
     @Override
     public void onClick(Signal signal) {
-        startActivity(new Intent(getActivity(), SignalActivity.class));
+        Intent intent = new Intent(getActivity(), SignalActivity.class);
+        intent.putExtra(SignalActivity.SIGNAL, signal);
+        startActivity(intent);
     }
 
 }

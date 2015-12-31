@@ -32,7 +32,7 @@
     <dimen name="fab_margin">@dimen/keyline_1</dimen>
 
     <dimen name="widget_corner_radius">6dp</dimen>
-    <dimen name="view_default_elevation">4dp</dimen>
+    <dimen name="view_default_elevation">2dp</dimen>
 
     <dimen name="keyline_1">16dp</dimen>
     <dimen name="keyline_1_minus_8dp">8dp</dimen>
