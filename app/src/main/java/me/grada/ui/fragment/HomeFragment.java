@@ -38,6 +38,7 @@ import com.squareup.otto.Bus;
 import javax.inject.Inject;
 
 import butterknife.Bind;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.event.NearbySignalsInBackground;
@@ -60,8 +61,8 @@ public class HomeFragment extends BaseFragment {
     @Bind(R.id.tab_layout)
     TabLayout tabLayout;
 
-    @Bind(R.id.fab)
-    FloatingActionButton fab;
+    @Bind(R.id.fab_speed_dial)
+    FabSpeedDial fabSpeedDial;
 
     public static HomeFragment newInstance() {
         return new HomeFragment();
@@ -99,11 +100,5 @@ public class HomeFragment extends BaseFragment {
 
         // Give the TabLayout the ViewPager
         tabLayout.setupWithViewPager(viewPager);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
     }
 }
