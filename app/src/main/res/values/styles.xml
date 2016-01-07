@@ -44,4 +44,14 @@
         <item name="tabSelectedTextColor">@android:color/white</item>
     </style>
 
+    <style name="InputFieldTitle">
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+
+    <style name="InputField">
+        <item name="android:layout_marginLeft">-4dp</item>
+        <item name="android:layout_marginRight">04dp</item>
+    </style>
+
 </resources>

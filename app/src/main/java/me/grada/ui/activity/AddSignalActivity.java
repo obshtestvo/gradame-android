@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Obshtestvo
+ * Copyright (c) 2016 Obshtestvo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,67 +26,35 @@ package me.grada.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.picasso.Picasso;
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import me.grada.R;
-import me.grada.di.Injector;
-import me.grada.io.model.Signal;
 
 /**
- * Created by yavorivanov on 30/12/2015.
+ * Created by yavorivanov on 05/01/2016.
  */
-public class SignalActivity extends BaseActivity implements OnMapReadyCallback {
-
-    public static final String SIGNAL = "signal";
-
-    @Inject
-    Picasso picasso;
+public class AddSignalActivity extends BaseActivity implements OnMapReadyCallback {
 
     @Bind(R.id.map_view)
     MapView mapView;
 
-    @Bind(R.id.image_view)
-    ImageView topView;
-
-    @Bind(R.id.bottom_view_group)
-    View bottomViewGroup;
-
-    @Bind(R.id.title)
-    TextView titleView;
-
-    @Bind(R.id.description)
-    TextView descriptionView;
-
-    private Signal signal;
+    @Bind(R.id.category)
+    Spinner categoryView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signal);
+        setContentView(R.layout.activity_add_signal);
 
-        signal = getIntent().getParcelableExtra(SIGNAL);
-
-        Injector.INSTANCE.getImageFetcherComponent().inject(this);
         ButterKnife.bind(this);
-
-        picasso.load(signal.getImages()[0]).into(topView);
 
         // Gets the MapView from the XML layout and creates it
         mapView.onCreate(savedInstanceState);
@@ -94,24 +62,11 @@ public class SignalActivity extends BaseActivity implements OnMapReadyCallback {
         MapsInitializer.initialize(this);
         mapView.getMapAsync(this);
 
-        titleView.setText(signal.getTitle());
-        descriptionView.setText(signal.getDescription());
-
-        final int elevation = getResources().getDimensionPixelSize(R.dimen.view_default_elevation);
-        ViewCompat.setElevation(topView, elevation);
-        ViewCompat.setElevation(bottomViewGroup, elevation);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        LatLng latLng = new LatLng(signal.getLocation()[0], signal.getLocation()[1]);
-        googleMap.addMarker(new MarkerOptions()
-                .position(latLng));
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
-        googleMap.animateCamera(cameraUpdate);
+        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
+                R.array.category_array, android.R.layout.simple_spinner_dropdown_item);
+        categoryView.setAdapter(categoryAdapter);
     }
 
     @Override
@@ -132,6 +87,8 @@ public class SignalActivity extends BaseActivity implements OnMapReadyCallback {
         mapView.onLowMemory();
     }
 
-
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+    }
 
 }

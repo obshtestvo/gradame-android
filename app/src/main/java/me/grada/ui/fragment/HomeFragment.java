@@ -24,12 +24,13 @@
 
 package me.grada.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -39,10 +40,12 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.event.NearbySignalsInBackground;
 import me.grada.io.event.NearbySignalsInForeground;
+import me.grada.ui.activity.AddSignalActivity;
 import me.grada.ui.adapter.HomePageAdapter;
 
 /**
@@ -100,5 +103,13 @@ public class HomeFragment extends BaseFragment {
 
         // Give the TabLayout the ViewPager
         tabLayout.setupWithViewPager(viewPager);
+
+        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                startActivity(new Intent(getActivity(), AddSignalActivity.class));
+                return super.onMenuItemSelected(menuItem);
+            }
+        });
     }
 }
