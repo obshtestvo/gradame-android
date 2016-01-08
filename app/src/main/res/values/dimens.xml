@@ -55,4 +55,7 @@
 
     <dimen name="map_view_right_padding">11dp</dimen>
 
+    <dimen name="signal_detail_image_view_height">200dp</dimen>
+    <dimen name="signal_detail_transparent_view_height">300dp</dimen>
+
 </resources>

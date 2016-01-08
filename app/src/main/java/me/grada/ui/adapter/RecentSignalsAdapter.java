@@ -88,7 +88,7 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View container = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_recent_signal, parent, false);
+                .inflate(R.layout.list_item_recent_signal, parent, false);
         return new ViewHolder(container);
     }
 

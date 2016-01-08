@@ -71,7 +71,7 @@ import me.grada.io.event.NearbySignalsInBackground;
 import me.grada.io.event.NearbySignalsInForeground;
 import me.grada.io.model.Signal;
 import me.grada.io.task.MockNearbySignalsTask;
-import me.grada.ui.activity.SignalActivity;
+import me.grada.ui.activity.SignalDetailActivity;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
 
@@ -191,8 +191,8 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(getActivity(), SignalActivity.class);
-                intent.putExtra(SignalActivity.SIGNAL, markerSignalMap.get(marker));
+                Intent intent = new Intent(getActivity(), SignalDetailActivity.class);
+                intent.putExtra(SignalDetailActivity.SIGNAL, markerSignalMap.get(marker));
                 startActivity(intent);
             }
         });

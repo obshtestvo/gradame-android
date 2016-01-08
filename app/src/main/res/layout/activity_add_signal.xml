@@ -22,18 +22,12 @@
   ~ SOFTWARE.
   -->
 
-<android.support.percent.PercentFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/image_view"
+        android:id="@+id/top_view_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -121,7 +115,7 @@
         android:id="@+id/bottom_view_group"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         android:elevation="@dimen/view_default_elevation"
         android:paddingBottom="@dimen/keyline_1_minus_8dp"
@@ -133,7 +127,7 @@
             android:id="@+id/submit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/rounded_corner_button"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="@dimen/view_default_elevation"
             android:text="Submit"
             android:textAllCaps="true"
@@ -142,5 +136,17 @@
 
     </FrameLayout>
 
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_view_group"
+        android:layout_below="@id/top_view_group" />
 
-</android.support.percent.PercentFrameLayout>
+    <FrameLayout
+        android:id="@+id/layer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true" />
+
+</RelativeLayout>

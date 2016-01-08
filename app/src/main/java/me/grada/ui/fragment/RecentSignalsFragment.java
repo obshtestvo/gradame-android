@@ -46,7 +46,7 @@ import me.grada.io.event.MockRecentSignalsFailure;
 import me.grada.io.event.MockRecentSignalsSuccess;
 import me.grada.io.model.Signal;
 import me.grada.io.task.MockRecentSignalsTask;
-import me.grada.ui.activity.SignalActivity;
+import me.grada.ui.activity.SignalDetailActivity;
 import me.grada.ui.adapter.RecentSignalsAdapter;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
@@ -122,8 +122,8 @@ public class RecentSignalsFragment extends BaseFragment
 
     @Override
     public void onClick(Signal signal) {
-        Intent intent = new Intent(getActivity(), SignalActivity.class);
-        intent.putExtra(SignalActivity.SIGNAL, signal);
+        Intent intent = new Intent(getActivity(), SignalDetailActivity.class);
+        intent.putExtra(SignalDetailActivity.SIGNAL, signal);
         startActivity(intent);
     }
 

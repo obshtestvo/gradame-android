@@ -35,6 +35,8 @@
     <string name="nearby_location_permission_rationale">Nearby requires your device\'s location</string>
     <string name="enable_location">Enable\nlocation</string>
 
+    <string name="reported">Reported: %1$s ago</string>
+
     <string name="third_party_licenses">
         &lt;br&#47;&gt;&lt;a href="http://developer.android.com/license.html">com.android.support:appcompat-v7:23.1.1&lt;/a>
         &lt;br&#47;&gt;&lt;a href="http://developer.android.com/license.html">com.android.support:design:23.1.1&lt;/a>

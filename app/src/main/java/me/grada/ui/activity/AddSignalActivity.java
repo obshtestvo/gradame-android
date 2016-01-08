@@ -89,6 +89,7 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
 }
