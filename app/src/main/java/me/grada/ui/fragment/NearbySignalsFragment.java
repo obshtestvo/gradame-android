@@ -172,13 +172,8 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        final int mapPadding = getResources().getDimensionPixelSize(R.dimen.keyline_1);
-        final int rightPadding = getResources().getDimensionPixelSize(R.dimen.map_view_right_padding);
-        final int fabSize = getResources().getDimensionPixelSize(R.dimen.design_fab_size_normal);
-        final int bottomPadding = fabSize + mapPadding;
-        googleMap.setPadding(0, 0, rightPadding, bottomPadding);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
 
         googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
@@ -354,7 +349,6 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         }
 
         googleMap.setMyLocationEnabled(true);
-
         Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
         // The odd case when the device doesn't have a last known location
@@ -362,9 +356,7 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         if (location == null) return false;
 
         final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory
-                .newLatLngZoom(latLng, 16);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
         googleMap.animateCamera(cameraUpdate);
 
         return true;

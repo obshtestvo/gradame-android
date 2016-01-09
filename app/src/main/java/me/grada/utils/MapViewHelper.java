@@ -24,6 +24,7 @@
 
 package me.grada.utils;
 
+import android.support.annotation.NonNull;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,7 +32,7 @@ import android.view.View;
 /**
  * Created by yavorivanov on 08/01/2016.
  */
-public class MapViewOverlayHelper extends GestureDetector.SimpleOnGestureListener {
+public class MapViewHelper extends GestureDetector.SimpleOnGestureListener {
 
     public interface Listener {
 
@@ -39,14 +40,15 @@ public class MapViewOverlayHelper extends GestureDetector.SimpleOnGestureListene
 
     }
 
-    private final View mapViewOverlay;
-    private final Listener listener;
-
-    public MapViewOverlayHelper(View mapViewOverlay, Listener listener) {
-        this.mapViewOverlay = mapViewOverlay;
-        this.listener = listener;
-
-        final GestureDetector gestureDetector = new GestureDetector(mapViewOverlay.getContext(), this);
+    public void setOverlay(@NonNull final View mapViewOverlay, @NonNull final Listener listener) {
+        final GestureDetector gestureDetector = new GestureDetector(mapViewOverlay.getContext(),
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapConfirmed(MotionEvent e) {
+                        listener.showFullScreenMap();
+                        return true;
+                    }
+                });
         mapViewOverlay.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -56,12 +58,4 @@ public class MapViewOverlayHelper extends GestureDetector.SimpleOnGestureListene
         });
     }
 
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        if (listener != null) {
-            listener.showFullScreenMap();
-            return true;
-        }
-        return super.onSingleTapConfirmed(e);
-    }
 }

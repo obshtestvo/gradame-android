@@ -50,6 +50,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.model.Signal;
@@ -70,8 +71,14 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
     @Bind(R.id.map_view)
     MapView mapView;
 
-    @Bind(R.id.fab)
-    FloatingActionButton fab;
+    @Bind(R.id.signal_location_fab)
+    FloatingActionButton signalLocationFab;
+
+    @Bind(R.id.my_location_fab)
+    FloatingActionButton myLocationFab;
+
+    @Bind(R.id.close_map_fab)
+    FloatingActionButton closeMapFab;
 
     @Bind(R.id.top_view_group)
     View topViewGroup;
@@ -122,7 +129,7 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
         recyclerView.setAdapter(adapter);
 
         final int elevation = getResources().getDimensionPixelSize(R.dimen.view_default_elevation);
-        ViewCompat.setElevation(imageView, elevation);
+        ViewCompat.setElevation(topViewGroup, elevation);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -130,6 +137,8 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
         zoomMapOut();
     }
 
@@ -174,6 +183,21 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
         }
     }
 
+    @OnClick(R.id.signal_location_fab)
+    public void onSignalLocationFab(View view) {
+        zoomMapIn();
+    }
+
+    @OnClick(R.id.my_location_fab)
+    public void onMyLocationFab(View view) {
+
+    }
+
+    @OnClick(R.id.close_map_fab)
+    public void onCloseFullScreenMap(View view) {
+        animateHideMap();
+    }
+
     private void animateShowMap() {
         isMapFullScreen = true;
 
@@ -191,18 +215,57 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
                 .setDuration(animDuration)
                 .start();
 
-        ViewCompat.setScaleX(fab, 0.25f);
-        ViewCompat.setScaleY(fab, 0.25f);
-        fab.setVisibility(View.VISIBLE);
+        ViewCompat.setScaleX(closeMapFab, 0.25f);
+        ViewCompat.setScaleY(closeMapFab, 0.25f);
 
-        ViewCompat.animate(fab)
+        animateFabsIn();
+        zoomMapIn();
+    }
+
+    private void animateFabsIn() {
+        signalLocationFab.setVisibility(View.VISIBLE);
+        myLocationFab.setVisibility(View.VISIBLE);
+        closeMapFab.setVisibility(View.VISIBLE);
+
+        int animDuration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+        int delay = animDuration / 2;
+
+        ViewCompat.setAlpha(signalLocationFab, 0.0f);
+        ViewCompat.setScaleX(signalLocationFab, 0.25f);
+        ViewCompat.setScaleY(signalLocationFab, 0.25f);
+
+        ViewCompat.setAlpha(myLocationFab, 0.0f);
+        ViewCompat.setScaleX(myLocationFab, 0.25f);
+        ViewCompat.setScaleY(myLocationFab, 0.25f);
+
+        ViewCompat.setScaleX(closeMapFab, 0.25f);
+        ViewCompat.setScaleY(closeMapFab, 0.25f);
+
+        ViewCompat.animate(signalLocationFab)
+                .setStartDelay(delay)
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(.5f)
+                .setInterpolator(new FastOutSlowInInterpolator())
+                .setDuration(animDuration)
+                .start();
+
+        ViewCompat.animate(myLocationFab)
+                .setStartDelay(delay)
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(.5f)
+                .setInterpolator(new FastOutSlowInInterpolator())
+                .setDuration(animDuration)
+                .start();
+
+        ViewCompat.animate(closeMapFab)
+                .setStartDelay(delay)
                 .scaleX(1f)
                 .scaleY(1f)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .setDuration(animDuration)
                 .start();
-
-        zoomMapIn();
     }
 
     private void animateHideMap() {
@@ -211,27 +274,48 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
         int animDuration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 
         ViewCompat.animate(topViewGroup)
-                .translationY(0f)
+                .translationY(0.25f)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .setDuration(animDuration)
                 .start();
 
         ViewCompat.animate(recyclerView)
-                .translationY(0f)
+                .translationY(0.25f)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .setDuration(animDuration)
                 .start();
 
-        ViewCompat.animate(fab)
+        animateFabsOut();
+        zoomMapOut();
+    }
+
+    private void animateFabsOut() {
+        int animDuration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+        ViewCompat.animate(signalLocationFab)
                 .scaleX(0.25f)
                 .scaleY(0.25f)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .setDuration(animDuration)
                 .start();
 
-        fab.setVisibility(View.GONE);
+        ViewCompat.animate(myLocationFab)
+                .scaleX(0.25f)
+                .scaleY(0.25f)
+                .setInterpolator(new FastOutSlowInInterpolator())
+                .setDuration(animDuration)
+                .start();
 
-        zoomMapOut();
+        ViewCompat.animate(closeMapFab)
+                .scaleX(0.25f)
+                .scaleY(0.25f)
+                .setInterpolator(new FastOutSlowInInterpolator())
+                .setDuration(animDuration)
+                .start();
+
+        signalLocationFab.setVisibility(View.GONE);
+        myLocationFab.setVisibility(View.GONE);
+        closeMapFab.setVisibility(View.GONE);
     }
 
     private void zoomMapIn() {
@@ -244,8 +328,7 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
 
     private void zoomMap(int level) {
         LatLng latLng = new LatLng(signal.getLocation()[0], signal.getLocation()[1]);
-        googleMap.addMarker(new MarkerOptions()
-                .position(latLng));
+        googleMap.addMarker(new MarkerOptions().position(latLng));
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, level);
         googleMap.animateCamera(cameraUpdate);

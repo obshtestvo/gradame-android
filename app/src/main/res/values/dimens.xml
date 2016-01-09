@@ -29,7 +29,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">@dimen/keyline_1</dimen>
     <dimen name="activity_vertical_margin">@dimen/keyline_1</dimen>
-    <dimen name="fab_margin">@dimen/keyline_1</dimen>
+    <dimen name="fab_margin">0dp</dimen>
+    <dimen name="fab_negative_margin">@dimen/negative_keyline_1_minus_8dp</dimen>
 
     <dimen name="widget_corner_radius">4dp</dimen>
     <dimen name="view_default_elevation">2dp</dimen>
@@ -38,6 +39,7 @@
     <dimen name="keyline_1_minus_8dp">8dp</dimen>
     <dimen name="keyline_2">72dp</dimen>
     <dimen name="keyline_2_minus_16dp">56dp</dimen>
+    <dimen name="negative_keyline_1">-16dp</dimen>
     <dimen name="negative_keyline_1_minus_8dp">-8dp</dimen>
 
     <!-- List view -->
