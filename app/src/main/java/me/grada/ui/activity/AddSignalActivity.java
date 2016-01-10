@@ -24,36 +24,78 @@
 
 package me.grada.ui.activity;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.grada.R;
+import me.grada.di.Injector;
+import me.grada.utils.MapViewInteractor;
+import me.grada.utils.ViewUtils;
 
 /**
  * Created by yavorivanov on 05/01/2016.
  */
 public class AddSignalActivity extends BaseActivity implements OnMapReadyCallback {
 
+    public static final String ATTACHMENT_URI = "attachment_uri";
+
+    @Inject
+    Picasso picasso;
+
+    @Bind(R.id.top_view_group)
+    ViewGroup topViewGroup;
+
+    @Bind(R.id.bottom_view_group)
+    ViewGroup bottomViewGroup;
+
     @Bind(R.id.map_view)
     MapView mapView;
 
+    @Bind(R.id.fab)
+    FloatingActionButton fabView;
+
+    @Bind(R.id.map_view_overlay)
+    View mapViewOverlay;
+
     @Bind(R.id.category)
     Spinner categoryView;
+
+    @Bind(R.id.attachment)
+    ImageView attachmentView;
+
+    private MapViewInteractor mapViewInteractor;
+    private GoogleMap googleMap;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_signal);
 
+        Injector.INSTANCE.getImageFetcherComponent().inject(this);
         ButterKnife.bind(this);
 
         // Gets the MapView from the XML layout and creates it
@@ -67,6 +109,16 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
         ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
                 R.array.category_array, android.R.layout.simple_spinner_dropdown_item);
         categoryView.setAdapter(categoryAdapter);
+
+        if (getIntent().hasExtra(ATTACHMENT_URI)) {
+            Uri uri = getIntent().getParcelableExtra(ATTACHMENT_URI);
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                attachmentView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -76,9 +128,31 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home && mapViewInteractor.onBackPressed()) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        this.googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+        final View contentView = findViewById(android.R.id.content);
+        ViewUtils.addOnGlobalLayoutListener(contentView, new Runnable() {
+            @Override
+            public void run() {
+                mapViewInteractor = new MapViewInteractor.Builder()
+                        .topView(topViewGroup)
+                        .bottomView(bottomViewGroup)
+                        .overlayView(mapViewOverlay)
+                        .fabView(fabView)
+                        .googleMap(googleMap)
+                        .build();
+            }
+        });
     }
 
     @Override
@@ -88,8 +162,20 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    public void onBackPressed() {
+        if (!mapViewInteractor.onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
+
+    @OnClick(R.id.submit)
+    public void onSubmit(View view) {
+        mapViewInteractor.animateTo(new LatLng(51.4572006, 0.0306386));
     }
 
 }

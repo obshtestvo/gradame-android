@@ -24,6 +24,7 @@
 
 package me.grada.ui.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,6 +55,10 @@ import me.grada.ui.adapter.HomePageAdapter;
 public class HomeFragment extends BaseFragment {
 
     private static final int NEARBY_PAGE_INDEX = 1;
+
+    private static final int TAKE_A_PICTURE = 0;
+    private static final int RECORD_A_VIDEO = 1;
+    private static final int CHOOSE_A_FILE = 2;
 
     @Inject
     Bus bus;
@@ -107,9 +112,27 @@ public class HomeFragment extends BaseFragment {
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
-                startActivity(new Intent(getActivity(), AddSignalActivity.class));
+                if (menuItem.getItemId() == R.id.action_file) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*,video/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Select a file"), CHOOSE_A_FILE);
+                } else {
+                    startActivity(new Intent(getActivity(), AddSignalActivity.class));
+                }
                 return super.onMenuItemSelected(menuItem);
             }
+
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CHOOSE_A_FILE && resultCode == Activity.RESULT_OK) {
+            Intent i = new Intent(getActivity(), AddSignalActivity.class);
+            i.putExtra(AddSignalActivity.ATTACHMENT_URI, data.getData());
+            startActivity(i);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

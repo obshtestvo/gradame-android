@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.grada.R;
 import me.grada.io.model.Signal;
 
@@ -44,18 +43,10 @@ public class SignalDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int TRANSPARENT_VIEW_TYPE = 0;
     private static final int DESCRIPTION_VIEW_TYPE = 1;
 
-    public interface OnClickListener {
-
-        void showFullScreenMap();
-
-    }
-
     private final Signal signal;
-    private final OnClickListener onClickListener;
 
-    public SignalDetailAdapter(Signal signal, OnClickListener onClickListener) {
+    public SignalDetailAdapter(Signal signal) {
         this.signal = signal;
-        this.onClickListener = onClickListener;
     }
 
     @Override
@@ -97,14 +88,6 @@ public class SignalDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public TransparentViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-
-        @OnClick(R.id.transparent_view)
-        public void onClick(View view) {
-            if (onClickListener != null) {
-                onClickListener.showFullScreenMap();
-            }
         }
 
     }

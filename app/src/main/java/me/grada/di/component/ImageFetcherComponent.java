@@ -28,6 +28,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import me.grada.di.module.PicassoModule;
+import me.grada.ui.activity.AddSignalActivity;
 import me.grada.ui.activity.SignalDetailActivity;
 import me.grada.ui.adapter.RecentSignalsAdapter;
 
@@ -41,5 +42,7 @@ public interface ImageFetcherComponent {
     void inject(RecentSignalsAdapter recentSignalsAdapter);
 
     void inject(SignalDetailActivity signalDetailActivity);
+
+    void inject(AddSignalActivity addSignalActivity);
 
 }

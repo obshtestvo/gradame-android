@@ -29,9 +29,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Interpolator;
 
 /**
@@ -121,6 +123,23 @@ public class ViewUtils {
                 view.setVisibility(View.GONE);
             }
         }
+    }
+
+    public static void addOnGlobalLayoutListener(@NonNull final View listenerReceiver,
+                                                 @NonNull final Runnable runnable) {
+        listenerReceiver.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) {
+                            listenerReceiver.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            listenerReceiver.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+                        runnable.run();
+                    }
+                });
+
     }
 
 }
