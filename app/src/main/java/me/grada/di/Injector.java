@@ -24,7 +24,6 @@
 
 package me.grada.di;
 
-import android.app.Application;
 import android.content.Context;
 
 import me.grada.di.component.AppComponent;
@@ -47,9 +46,9 @@ public enum Injector {
     private NetworkComponent networkComponent;
     private ImageFetcherComponent imageFetcherComponent;
 
-    public AppComponent initializeAppComponent(Application application) {
+    public AppComponent initializeAppComponent(AppModule appModule) {
         appComponent = DaggerAppComponent.builder()
-                .appModule(new AppModule(application))
+                .appModule(appModule)
                 .build();
         return appComponent;
     }
@@ -60,9 +59,10 @@ public enum Injector {
                 .build();
     }
 
-    public void initializeImageFetcherComponent(Context context) {
+    public void initializeImageFetcherComponent(Context context, AppModule appModule) {
         imageFetcherComponent = DaggerImageFetcherComponent.builder()
                 .picassoModule(new PicassoModule(context))
+                .appModule(appModule)
                 .build();
     }
 

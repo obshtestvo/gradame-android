@@ -32,7 +32,9 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import me.grada.di.module.AppModule;
+import me.grada.ui.activity.AddSignalActivity;
 import me.grada.ui.fragment.HomeFragment;
+import me.grada.ui.fragment.LocationFragment;
 import me.grada.ui.fragment.NearbySignalsFragment;
 import me.grada.ui.fragment.RecentSignalsFragment;
 
@@ -51,6 +53,8 @@ public interface AppComponent {
     void inject(RecentSignalsFragment recentSignalsFragment);
 
     void inject(NearbySignalsFragment nearbySignalsFragment);
+
+    void inject(LocationFragment locationFragment);
 
     Application application();
 

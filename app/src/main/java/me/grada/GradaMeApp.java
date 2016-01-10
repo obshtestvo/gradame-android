@@ -28,10 +28,9 @@ import android.app.Application;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
-import javax.inject.Inject;
-
 import me.grada.di.Injector;
 import me.grada.di.component.AppComponent;
+import me.grada.di.module.AppModule;
 
 /**
  * Created by yavorivanov on 23/12/2015.
@@ -50,9 +49,10 @@ public class GradaMeApp extends Application {
 
         JodaTimeAndroid.init(this);
 
-        AppComponent appComponent = Injector.INSTANCE.initializeAppComponent(this);
+        AppModule appModule = new AppModule(this);
+        AppComponent appComponent = Injector.INSTANCE.initializeAppComponent(appModule);
         Injector.INSTANCE.initializeNetworkComponent(appComponent);
-        Injector.INSTANCE.initializeImageFetcherComponent(getApplicationContext());
+        Injector.INSTANCE.initializeImageFetcherComponent(this, appModule);
     }
 
     public static GradaMeApp get() {

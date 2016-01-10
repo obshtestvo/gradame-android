@@ -25,11 +25,13 @@
 package me.grada.ui.activity;
 
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +44,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -53,6 +57,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.grada.R;
 import me.grada.di.Injector;
+import me.grada.io.event.LocationUpdateEvent;
+import me.grada.io.event.ShowLocationRationaleEvent;
+import me.grada.ui.fragment.LocationFragment;
 import me.grada.utils.MapViewInteractor;
 import me.grada.utils.ViewUtils;
 
@@ -65,6 +72,9 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Inject
     Picasso picasso;
+
+    @Inject
+    Bus bus;
 
     @Bind(R.id.top_view_group)
     ViewGroup topViewGroup;
@@ -86,6 +96,9 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Bind(R.id.attachment)
     ImageView attachmentView;
+
+    private Snackbar snackbar;
+    private LocationFragment locationFragment;
 
     private MapViewInteractor mapViewInteractor;
     private GoogleMap googleMap;
@@ -119,12 +132,31 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
                 e.printStackTrace();
             }
         }
+
+        locationFragment = LocationFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .add(locationFragment, LocationFragment.TAG)
+                .commitAllowingStateLoss();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bus.register(this);
+        locationFragment.getPermission();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        locationFragment.disconnectLocationProvider();
+        bus.unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -178,4 +210,23 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
         mapViewInteractor.animateTo(new LatLng(51.4572006, 0.0306386));
     }
 
+    @Subscribe
+    public void onShowLocationRationaleEvent(ShowLocationRationaleEvent event) {
+        snackbar = Snackbar.make(findViewById(android.R.id.content),
+                getString(R.string.nearby_location_permission_rationale),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(R.string.enable_location), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        locationFragment.promptLocationPermission();
+                    }
+                });
+        snackbar.show();
+    }
+
+    @Subscribe
+    public void onLocationUpdateEvent(LocationUpdateEvent event) {
+        Location location = event.getLocation();
+        mapViewInteractor.animateTo(new LatLng(location.getLatitude(), location.getLongitude()));
+    }
 }

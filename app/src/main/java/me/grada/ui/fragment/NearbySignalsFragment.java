@@ -30,18 +30,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -65,10 +60,12 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import me.grada.R;
 import me.grada.di.Injector;
+import me.grada.io.event.LocationUpdateEvent;
 import me.grada.io.event.MockNearbySignalsFailure;
 import me.grada.io.event.MockNearbySignalsSuccess;
 import me.grada.io.event.NearbySignalsInBackground;
 import me.grada.io.event.NearbySignalsInForeground;
+import me.grada.io.event.ShowLocationRationaleEvent;
 import me.grada.io.model.Signal;
 import me.grada.io.task.MockNearbySignalsTask;
 import me.grada.ui.activity.SignalDetailActivity;
@@ -78,12 +75,7 @@ import me.grada.utils.ViewUtils;
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
-    private static final int LOCATION_PERMISSION_REQUEST = 1;
-
-    private static final String LOCATION_PERMISSION_TYPE = Manifest.permission.ACCESS_FINE_LOCATION;
+public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCallback {
 
     @Inject
     Bus bus;
@@ -101,9 +93,9 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
 
     private GoogleMap googleMap;
 
-    private GoogleApiClient googleApiClient;
-
     private Map<Marker, Signal> markerSignalMap = new HashMap<>();
+
+    private LocationFragment locationFragment;
 
     public static NearbySignalsFragment newInstance() {
         return new NearbySignalsFragment();
@@ -113,6 +105,11 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.INSTANCE.getAppComponent().inject(this);
+
+        locationFragment = LocationFragment.newInstance();
+        getChildFragmentManager().beginTransaction()
+                .add(locationFragment, LocationFragment.TAG)
+                .commitAllowingStateLoss();
     }
 
     @Override
@@ -136,9 +133,6 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     public void onStart() {
         super.onStart();
         bus.register(this);
-        if (googleApiClient != null) {
-            googleApiClient.connect();
-        }
     }
 
     @Override
@@ -150,9 +144,6 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     @Override
     public void onStop() {
         bus.unregister(this);
-        if (googleApiClient != null) {
-            googleApiClient.disconnect();
-        }
         super.onStop();
     }
 
@@ -174,15 +165,6 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
 
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
-
-        googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                return showLastKnownLocation();
-
-            }
-        });
-
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -195,37 +177,14 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         ViewUtils.animateOut(progressView);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST) {
-            // Received the permission for the location provider
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Connect to Play Services Location API in order to get a location fix
-                connectToLocationServices();
-            } else {
-                // Permission denied, we can't use the location provider
-                // Determine if the user has ticked 'Never ask again'
-                boolean showRationale = shouldShowRequestPermissionRationale(permissions[0]);
-                if (showRationale) {
-                    showLocationPermissionRationale();
-                } else {
-                    // TODO: Replace the MapView with an in-line error to indicate that
-                    // the functionality doesn't work without the location service enabled
-                }
-            }
-        }
-    }
-
     @Subscribe
     public void onNearbySignalsInForeground(NearbySignalsInForeground event) {
         // Ask for location permission if the target is Marshmallow or newer
         // else connect to Play Services Location API in order to get a location fix
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            getLocationPermission();
+            locationFragment.getPermission();
         } else {
-            connectToLocationServices();
+            locationFragment.connectToLocationProvider();
         }
     }
 
@@ -235,10 +194,46 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         if (snackbar != null) {
             snackbar.dismiss();
         }
+        locationFragment.disconnectLocationProvider();
+    }
 
-        if (googleApiClient != null) {
-            googleApiClient.disconnect();
+    /**
+     * Shows a {@link Snackbar} asking the user to enable location services.
+     */
+    @Subscribe
+    public void onShowLocationRationaleEvent(ShowLocationRationaleEvent event) {
+        snackbar = Snackbar.make(getView(), getString(R.string.nearby_location_permission_rationale),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(R.string.enable_location), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        locationFragment.promptLocationPermission();
+                    }
+                });
+        snackbar.show();
+    }
+
+    @Subscribe
+    public void onLocationUpdateEvent(LocationUpdateEvent event) {
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
         }
+
+        new MockNearbySignalsTask().execute();
+
+        googleMap.setMyLocationEnabled(true);
+
+        // The odd case when the device doesn't have a last known location
+        // Ignore for now, you only hit this case on the emulator
+        Location location = event.getLocation();
+        if (location == null) return;
+
+        final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
+        googleMap.animateCamera(cameraUpdate);
     }
 
     @Subscribe
@@ -273,102 +268,4 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         // TODO: Handle error
     }
 
-    private void getLocationPermission() {
-        // Check if the target is Marshmallow, or newer, and proceed
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSION_TYPE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                // Connect to Play Services Location API in order to get a location fix
-                connectToLocationServices();
-            } else {
-                // Request permission to use location providers
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                        LOCATION_PERMISSION_TYPE)) {
-                    showLocationPermissionRationale();
-                    // TODO: Explain why the permission is needed (occurs after previous rejection)
-                } else {
-                    promptLocationPermission();
-                }
-            }
-        }
-    }
-
-    /**
-     * Shows a {@link Snackbar} asking the user to enable location services.
-     */
-    private void showLocationPermissionRationale() {
-        snackbar = Snackbar.make(getView(), getString(R.string.nearby_location_permission_rationale),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(R.string.enable_location), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        promptLocationPermission();
-                    }
-                });
-        snackbar.show();
-    }
-
-    /**
-     * Shows the standard Android dialog view prompting for location permission
-     */
-    private void promptLocationPermission() {
-        ActivityCompat.requestPermissions(getActivity(), new String[]{LOCATION_PERMISSION_TYPE},
-                LOCATION_PERMISSION_REQUEST);
-    }
-
-    private void connectToLocationServices() {
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-        googleApiClient.connect();
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        showLastKnownLocation();
-
-        // TODO: Replace with a network call to fetch nearby signals using LatLng of last known loc
-        new MockNearbySignalsTask().execute();
-    }
-
-    /**
-     * Moves the map to the device's last known location, if available, and if the location
-     * permission has been granted.
-     *
-     * @return True if the last known location was successfully shown, false otherwise.
-     */
-    private boolean showLastKnownLocation() {
-        if (ContextCompat.checkSelfPermission(getActivity(), LOCATION_PERMISSION_TYPE)
-                != PackageManager.PERMISSION_GRANTED) {
-            getLocationPermission();
-            return false;
-        }
-
-        googleMap.setMyLocationEnabled(true);
-        Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
-        // The odd case when the device doesn't have a last known location
-        // Ignore for now, you only hit this case on the emulator
-        if (location == null) return false;
-
-        final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
-        googleMap.animateCamera(cameraUpdate);
-
-        return true;
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        // TODO: Handle error
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // TODO: Handle error
-    }
 }

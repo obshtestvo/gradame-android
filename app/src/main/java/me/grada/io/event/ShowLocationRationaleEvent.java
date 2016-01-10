@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Obshtestvo
+ * Copyright (c) 2016 Obshtestvo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,46 +22,10 @@
  * SOFTWARE.
  */
 
-package me.grada.di.module;
-
-import android.app.Application;
-
-import com.squareup.otto.Bus;
-import com.squareup.otto.ThreadEnforcer;
-
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
+package me.grada.io.event;
 
 /**
- * Created by yavorivanov on 23/12/2015.
+ * Created by yavorivanov on 10/01/2016.
  */
-@Module
-@Singleton
-public class AppModule {
-
-    private final Application application;
-
-    private Bus bus;
-
-    public AppModule(Application application) {
-        this.application = application;
-    }
-
-    @Singleton
-    @Provides
-    public Application providesApplication() {
-        return application;
-    }
-
-    @Singleton
-    @Provides
-    public Bus providesEventBus() {
-        if (bus == null) {
-            bus = new Bus(ThreadEnforcer.MAIN);
-        }
-        return bus;
-    }
-
+public class ShowLocationRationaleEvent {
 }
