@@ -61,28 +61,27 @@
         android:paddingTop="@dimen/keyline_1_minus_8dp">
 
         <Spinner
-            android:id="@+id/category"
+            android:id="@+id/category_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/negative_keyline_1_minus_8dp"
             android:layout_marginTop="@dimen/negative_keyline_1_minus_8dp" />
 
         <EditText
-            android:id="@+id/address"
+            android:id="@+id/address_view"
             style="@style/InputField"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="100 Bulgaria Boulevard, Sofia" />
+            android:layout_height="wrap_content" />
 
         <EditText
-            android:id="@+id/description"
+            android:id="@+id/description_view"
             style="@style/InputField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Description (optional)" />
 
         <Button
-            android:id="@+id/submit"
+            android:id="@+id/submit_view"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -94,7 +94,7 @@ public class SignalDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public class DescriptionViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.description)
+        @Bind(R.id.description_view)
         TextView description;
 
         public DescriptionViewHolder(View itemView) {

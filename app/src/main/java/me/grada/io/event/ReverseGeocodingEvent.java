@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Obshtestvo
+ * Copyright (c) 2016 Obshtestvo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,45 +22,21 @@
  * SOFTWARE.
  */
 
-package me.grada.di.component;
-
-import android.app.Application;
-
-import com.squareup.otto.Bus;
-
-import javax.inject.Singleton;
-
-import dagger.Component;
-import me.grada.di.module.AppModule;
-import me.grada.io.task.ReverseGeocodeTask;
-import me.grada.ui.activity.AddSignalActivity;
-import me.grada.ui.fragment.HomeFragment;
-import me.grada.ui.fragment.LocationFragment;
-import me.grada.ui.fragment.NearbySignalsFragment;
-import me.grada.ui.fragment.RecentSignalsFragment;
+package me.grada.io.event;
 
 /**
- * Base app component.  It's likely it will be used as a dependency / downstream component
- * hence expose dependencies as you see fit.
- *
- * Created by yavorivanov on 22/12/2015.
+ * Created by yavorivanov on 16/01/2016.
  */
-@Singleton
-@Component(modules = {AppModule.class})
-public interface AppComponent {
+public class ReverseGeocodingEvent {
 
-    void inject(HomeFragment homeFragment);
+    private final String address;
 
-    void inject(RecentSignalsFragment recentSignalsFragment);
+    public ReverseGeocodingEvent(String address) {
+        this.address = address;
+    }
 
-    void inject(NearbySignalsFragment nearbySignalsFragment);
-
-    void inject(LocationFragment locationFragment);
-
-    void inject(ReverseGeocodeTask reverseGeocodeTask);
-
-    Application application();
-
-    Bus bus();
+    public String getAddress() {
+        return address;
+    }
 
 }

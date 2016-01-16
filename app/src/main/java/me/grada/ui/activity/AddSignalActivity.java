@@ -37,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -59,7 +60,9 @@ import butterknife.OnClick;
 import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.event.LocationUpdateEvent;
+import me.grada.io.event.ReverseGeocodingEvent;
 import me.grada.io.event.ShowLocationRationaleEvent;
+import me.grada.io.task.ReverseGeocodeTask;
 import me.grada.ui.fragment.LocationFragment;
 import me.grada.utils.MapViewInteractor;
 import me.grada.utils.ViewUtils;
@@ -92,8 +95,11 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     @Bind(R.id.map_view_overlay)
     View mapViewOverlay;
 
-    @Bind(R.id.category)
+    @Bind(R.id.category_view)
     Spinner categoryView;
+
+    @Bind(R.id.address_view)
+    EditText addressView;
 
     @Bind(R.id.attachment)
     ImageView attachmentView;
@@ -210,7 +216,7 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
         }
     }
 
-    @OnClick(R.id.submit)
+    @OnClick(R.id.submit_view)
     public void onSubmit(View view) {
         mapViewInteractor.animateTo(new LatLng(51.4572006, 0.0306386));
     }
@@ -230,8 +236,16 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     }
 
     @Subscribe
+    public void onReverseGeocodingEvent(ReverseGeocodingEvent event) {
+        addressView.setText(event.getAddress());
+    }
+
+
+    @Subscribe
     public void onLocationUpdateEvent(LocationUpdateEvent event) {
         Location location = event.getLocation();
-        mapViewInteractor.animateTo(new LatLng(location.getLatitude(), location.getLongitude()));
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        mapViewInteractor.animateTo(latLng);
+        new ReverseGeocodeTask().execute(latLng);
     }
 }
