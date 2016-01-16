@@ -33,7 +33,7 @@
         android:elevation="0dp" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/map_fab_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
@@ -111,7 +111,7 @@
             android:scaleType="centerCrop" />
 
         <io.github.yavski.fabspeeddial.FabSpeedDial
-            android:id="@+id/fab_speed_dial"
+            android:id="@+id/attachment_fab_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"

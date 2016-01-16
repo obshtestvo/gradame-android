@@ -48,6 +48,7 @@ import me.grada.io.event.NearbySignalsInBackground;
 import me.grada.io.event.NearbySignalsInForeground;
 import me.grada.ui.activity.AddSignalActivity;
 import me.grada.ui.adapter.HomePageAdapter;
+import me.grada.utils.AttachmentHelper;
 
 /**
  * Created by yavorivanov on 28/12/2015.
@@ -55,10 +56,6 @@ import me.grada.ui.adapter.HomePageAdapter;
 public class HomeFragment extends BaseFragment {
 
     private static final int NEARBY_PAGE_INDEX = 1;
-
-    private static final int TAKE_A_PICTURE = 0;
-    private static final int RECORD_A_VIDEO = 1;
-    private static final int CHOOSE_A_FILE = 2;
 
     @Inject
     Bus bus;
@@ -113,10 +110,9 @@ public class HomeFragment extends BaseFragment {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.action_file) {
-                    Intent intent = new Intent();
-                    intent.setType("image/*,video/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(intent, "Select a file"), CHOOSE_A_FILE);
+                    Intent intent = AttachmentHelper.getFileChooserIntent();
+                    startActivityForResult(Intent.createChooser(intent, "Select a file"),
+                            AttachmentHelper.TYPE_FILE_CHOOSER);
                 } else {
                     startActivity(new Intent(getActivity(), AddSignalActivity.class));
                 }
@@ -128,7 +124,7 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CHOOSE_A_FILE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == AttachmentHelper.TYPE_FILE_CHOOSER && resultCode == Activity.RESULT_OK) {
             Intent i = new Intent(getActivity(), AddSignalActivity.class);
             i.putExtra(AddSignalActivity.ATTACHMENT_URI, data.getData());
             startActivity(i);

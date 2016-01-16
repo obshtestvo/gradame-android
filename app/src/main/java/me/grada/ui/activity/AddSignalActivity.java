@@ -24,6 +24,8 @@
 
 package me.grada.ui.activity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
@@ -57,6 +59,8 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.event.LocationUpdateEvent;
@@ -64,6 +68,7 @@ import me.grada.io.event.ReverseGeocodingEvent;
 import me.grada.io.event.ShowLocationRationaleEvent;
 import me.grada.io.task.ReverseGeocodeTask;
 import me.grada.ui.fragment.LocationFragment;
+import me.grada.utils.AttachmentHelper;
 import me.grada.utils.MapViewInteractor;
 import me.grada.utils.ViewUtils;
 
@@ -89,11 +94,14 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     @Bind(R.id.map_view)
     MapView mapView;
 
-    @Bind(R.id.fab)
-    FloatingActionButton fabView;
+    @Bind(R.id.map_fab_view)
+    FloatingActionButton mapFabView;
 
     @Bind(R.id.map_view_overlay)
     View mapViewOverlay;
+
+    @Bind(R.id.attachment_fab_view)
+    FabSpeedDial attachementFabView;
 
     @Bind(R.id.category_view)
     Spinner categoryView;
@@ -131,14 +139,21 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
         categoryView.setAdapter(categoryAdapter);
 
         if (getIntent().hasExtra(ATTACHMENT_URI)) {
-            Uri uri = getIntent().getParcelableExtra(ATTACHMENT_URI);
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                attachmentView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            showAttachment((Uri) getIntent().getParcelableExtra(ATTACHMENT_URI));
         }
+
+        attachementFabView.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.action_file) {
+                    Intent intent = AttachmentHelper.getFileChooserIntent();
+                    startActivityForResult(Intent.createChooser(intent, "Select a file"),
+                            AttachmentHelper.TYPE_FILE_CHOOSER);
+                    return true;
+                }
+                return super.onMenuItemSelected(menuItem);
+            }
+        });
 
         locationFragment = LocationFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -191,7 +206,7 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
                         .topView(topViewGroup)
                         .bottomView(bottomViewGroup)
                         .overlayView(mapViewOverlay)
-                        .fabView(fabView)
+                        .fabView(mapFabView)
                         .googleMap(googleMap)
                         .build();
             }
@@ -210,15 +225,33 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
         mapView.onDestroy();
     }
 
+    @Override
     public void onBackPressed() {
         if (!mapViewInteractor.onBackPressed()) {
             super.onBackPressed();
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AttachmentHelper.TYPE_FILE_CHOOSER && resultCode == Activity.RESULT_OK) {
+            showAttachment(data.getData());
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @OnClick(R.id.submit_view)
     public void onSubmit(View view) {
         mapViewInteractor.animateTo(new LatLng(51.4572006, 0.0306386));
+    }
+
+    private void showAttachment(Uri uri) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            attachmentView.setImageBitmap(bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Subscribe
@@ -239,7 +272,6 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     public void onReverseGeocodingEvent(ReverseGeocodingEvent event) {
         addressView.setText(event.getAddress());
     }
-
 
     @Subscribe
     public void onLocationUpdateEvent(LocationUpdateEvent event) {
