@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ The MIT License (MIT)
   ~
   ~ Copyright (c) 2015 Obshtestvo
@@ -22,16 +21,16 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/map_view"
-        android:elevation="0dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:elevation="0dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -49,112 +48,80 @@
         android:clickable="true" />
 
     <LinearLayout
-        android:id="@+id/top_view_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:elevation="@dimen/view_default_elevation"
-        android:orientation="vertical"
-        android:padding="@dimen/keyline_1"
-        android:scaleType="centerCrop">
-
-        <TextView
-            style="@style/InputFieldTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Title" />
-
-        <EditText
-            android:id="@+id/title"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            style="@style/InputFieldTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Description" />
-
-        <EditText
-            android:id="@+id/description"
-            style="@style/InputField"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/keyline_1_minus_8dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Attachment"
-                    android:textColor="?attr/colorAccent"
-                    android:textSize="12dp" />
-
-                <ImageView
-                    android:id="@+id/attachment"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:layout_marginTop="@dimen/keyline_1_minus_8dp"
-                    android:scaleType="centerCrop" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/InputFieldTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Category" />
-
-                <Spinner
-                    android:id="@+id/category"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/negative_keyline_1_minus_8dp"
-                    android:layout_marginTop="@dimen/negative_keyline_1_minus_8dp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <FrameLayout
         android:id="@+id/bottom_view_group"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@android:color/white"
         android:elevation="@dimen/view_default_elevation"
+        android:orientation="vertical"
         android:paddingBottom="@dimen/keyline_1_minus_8dp"
         android:paddingLeft="@dimen/keyline_1"
         android:paddingRight="@dimen/keyline_1"
         android:paddingTop="@dimen/keyline_1_minus_8dp">
 
+        <Spinner
+            android:id="@+id/category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/negative_keyline_1_minus_8dp"
+            android:layout_marginTop="@dimen/negative_keyline_1_minus_8dp" />
+
+        <EditText
+            android:id="@+id/address"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="100 Bulgaria Boulevard, Sofia" />
+
+        <EditText
+            android:id="@+id/description"
+            style="@style/InputField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description (optional)" />
+
         <Button
             android:id="@+id/submit"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            style="@style/Widget.AppCompat.Button.Colored"
             android:elevation="@dimen/view_default_elevation"
             android:text="Submit"
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/top_view_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:elevation="@dimen/view_default_elevation">
+
+        <ImageView
+            android:id="@+id/attachment"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:background="@android:color/black"
+            android:clickable="true"
+            android:elevation="@dimen/view_default_elevation"
+            android:outlineProvider="bounds"
+            android:scaleType="centerCrop" />
+
+        <io.github.yavski.fabspeeddial.FabSpeedDial
+            android:id="@+id/fab_speed_dial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="96dp"
+            android:elevation="@dimen/view_default_elevation"
+            app:fabGravity="top_end"
+            app:fabMenu="@menu/fab_menu"
+            app:miniFabDrawableTint="?attr/colorPrimaryDark"
+            app:miniFabTitleTextColor="?attr/colorPrimaryDark" />
 
     </FrameLayout>
 

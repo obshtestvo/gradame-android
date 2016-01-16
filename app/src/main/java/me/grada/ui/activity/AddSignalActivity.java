@@ -27,6 +27,7 @@ package me.grada.ui.activity;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -143,7 +144,11 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     protected void onStart() {
         super.onStart();
         bus.register(this);
-        locationFragment.getPermission();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            locationFragment.getPermission();
+        } else {
+            locationFragment.connectToLocationProvider();
+        }
     }
 
     @Override
