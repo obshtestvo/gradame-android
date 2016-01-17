@@ -28,7 +28,6 @@ import android.app.Application;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
-import android.text.TextUtils;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.otto.Bus;
@@ -81,15 +80,6 @@ public class ReverseGeocodeTask extends AsyncTask<LatLng, Void, Address> {
     @Override
     protected void onPostExecute(Address address) {
         super.onPostExecute(address);
-
-        final String addressStr;
-
-        if (TextUtils.isEmpty(address.getAddressLine(1))) {
-            addressStr = address.getAddressLine(0);
-        } else {
-            addressStr = address.getAddressLine(0) + ", " + address.getAddressLine(1);
-        }
-
-        bus.post(new ReverseGeocodingEvent(addressStr));
+        bus.post(new ReverseGeocodingEvent(address.getAddressLine(0)));
     }
 }

@@ -33,11 +33,11 @@ import javax.inject.Singleton;
 import dagger.Component;
 import me.grada.di.module.AppModule;
 import me.grada.io.task.ReverseGeocodeTask;
-import me.grada.ui.activity.AddSignalActivity;
 import me.grada.ui.fragment.HomeFragment;
 import me.grada.ui.fragment.LocationFragment;
 import me.grada.ui.fragment.NearbySignalsFragment;
 import me.grada.ui.fragment.RecentSignalsFragment;
+import me.grada.utils.MapViewInteractor;
 
 /**
  * Base app component.  It's likely it will be used as a dependency / downstream component
@@ -58,6 +58,8 @@ public interface AppComponent {
     void inject(LocationFragment locationFragment);
 
     void inject(ReverseGeocodeTask reverseGeocodeTask);
+
+    void inject(MapViewInteractor mapViewInteractor);
 
     Application application();
 

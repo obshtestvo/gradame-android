@@ -35,23 +35,40 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
+import javax.inject.Inject;
+
+import me.grada.di.Injector;
+import me.grada.io.event.ReverseGeocodingEvent;
+import me.grada.io.task.ReverseGeocodeTask;
 
 /**
  * Created by yavorivanov on 10/01/2016.
  */
 public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
 
+    @Inject
+    Bus bus;
+
     private final View topView;
     private final View bottomView;
     private final View overlayView;
-    private final View fabView;
+    private final View closeFabView;
+    private final View editFabView;
+    private final View editAddressView;
+    private final View placeView;
 
+    private final boolean isEditable;
     private final GoogleMap googleMap;
     private LatLng latLng;
     private Marker marker;
@@ -65,16 +82,42 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
     private MapViewInteractor(View topView,
                               View bottomView,
                               View overlayView,
-                              View fabView,
-                              GoogleMap googleMap) {
+                              View closeFabView,
+                              View editFabView,
+                              View editAddressView,
+                              View placeView,
+                              GoogleMap googleMap,
+                              boolean isEditable) {
         this.topView = topView;
         this.bottomView = bottomView;
         this.overlayView = overlayView;
-        this.fabView = fabView;
+        this.closeFabView = closeFabView;
+        this.editFabView = editFabView;
+        this.editAddressView = editAddressView;
+        this.placeView = placeView;
         this.googleMap = googleMap;
+        this.isEditable = isEditable;
     }
 
     private void setUp(boolean isOverlayPartOfBottomView) {
+        Injector.INSTANCE.getAppComponent().inject(this);
+
+        if (isEditable()) {
+            bus.register(this);
+
+            editFabView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    enableEditAddress(true);
+                }
+            });
+
+        }
+
+        if (latLng != null) {
+            new ReverseGeocodeTask().execute(latLng);
+        }
+
         // Determine the view coordinates of the latitude and longitude for both
         // part and full screen modes
         latScreenTarget = topView.getRight() / 2;
@@ -90,7 +133,7 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
         mediumAnimDuration = topView.getResources().getInteger(android.R.integer.config_mediumAnimTime);
 
         // Set up the various listeners
-        fabView.setOnClickListener(new View.OnClickListener() {
+        closeFabView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -102,7 +145,13 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
                     @Override
                     public boolean onSingleTapConfirmed(MotionEvent e) {
                         animateShowMap();
-                        animateShowFab();
+                        animateShowView(closeFabView);
+
+                        if (isEditable()) {
+                            animateShowView(editFabView);
+                            animateShowView(editAddressView);
+                        }
+
                         return true;
                     }
                 });
@@ -115,6 +164,14 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
             }
         });
 
+    }
+
+    public void onStart() {
+        bus.register(this);
+    }
+
+    public void onStop() {
+        bus.unregister(this);
     }
 
     private void animateShowMap() {
@@ -137,11 +194,11 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
         centerLatLng(latScreenTarget, lngFullScreenTarget);
     }
 
-    private void animateShowFab() {
-        fabView.setScaleX(0.25f);
-        fabView.setScaleY(0.25f);
+    private void animateShowView(final View view) {
+        view.setScaleX(0.25f);
+        view.setScaleY(0.25f);
 
-        fabView.animate()
+        view.animate()
                 .setStartDelay(mediumAnimDuration)
                 .setDuration(mediumAnimDuration)
                 .scaleX(1f)
@@ -151,7 +208,7 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
                     @Override
                     public void onAnimationStart(Animator animation) {
                         super.onAnimationStart(animation);
-                        fabView.setVisibility(View.VISIBLE);
+                        view.setVisibility(View.VISIBLE);
                     }
                 })
                 .start();
@@ -177,8 +234,8 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
         centerLatLng(latScreenTarget, lngPartScreenTarget);
     }
 
-    private void animateHideFab() {
-        fabView.animate()
+    private void animateHideView(final View view) {
+        view.animate()
                 .scaleX(0.25f)
                 .scaleY(0.25f)
                 .setDuration(mediumAnimDuration / 2)
@@ -187,7 +244,7 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        fabView.setVisibility(View.GONE);
+                        view.setVisibility(View.GONE);
                     }
                 })
                 .start();
@@ -195,7 +252,16 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
 
     public boolean onBackPressed() {
         if (isMapFullScreen) {
-            animateHideFab();
+            enableEditAddress(false);
+            animateHideView(closeFabView);
+
+            if (isEditable()) {
+                animateHideView(editFabView);
+                animateHideView(editAddressView);
+                // Post back the latest address to the full-screen view
+                bus.post(new ReverseGeocodingEvent(((EditText) editAddressView).getText().toString()));
+            }
+
             animateHideMap();
             return true;
         }
@@ -225,13 +291,51 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
         googleMap.animateCamera(CameraUpdateFactory.scrollBy(point.x - viewX, point.y - viewY));
     }
 
+    private void enableEditAddress(boolean enable) {
+        if (!isEditable()) return;
+
+        editAddressView.setEnabled(enable);
+
+        if (enable) {
+            animateShowView(placeView);
+            googleMap.clear();
+            marker = null;
+            googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+                @Override
+                public void onCameraChange(CameraPosition cameraPosition) {
+                    latLng = cameraPosition.target;
+                    new ReverseGeocodeTask().execute(latLng);
+                }
+            });
+        } else {
+            googleMap.setOnCameraChangeListener(null);
+            animateHideView(placeView);
+        }
+
+    }
+
+    private boolean isEditable() {
+        return isEditable;
+    }
+
+    @Subscribe
+    public void onReverseGeocodingEvent(ReverseGeocodingEvent event) {
+        if (isEditable()) {
+            ((EditText) editAddressView).setText(event.getAddress());
+        }
+    }
+
     public static class Builder {
 
         private View topView;
         private View bottomView;
         private View overlayView;
         private GoogleMap googleMap;
-        private View fabView;
+        private View closeFabView;
+        private View editFabView;
+        private View placeView;
+        private View editAddressView;
+        private boolean isEditable;
         private boolean isOverlayParOfBottomView;
 
         public Builder topView(View topView) {
@@ -254,8 +358,16 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
             return this;
         }
 
-        public Builder fabView(View fabView) {
-            this.fabView = fabView;
+        public Builder closeFabView(View closeFabView) {
+            this.closeFabView = closeFabView;
+            return this;
+        }
+
+        public Builder editModeViews(View editFabView, View editAddressView, View markerView) {
+            this.editFabView = editFabView;
+            this.editAddressView = editAddressView;
+            this.placeView = markerView;
+            isEditable = true;
             return this;
         }
 
@@ -277,20 +389,21 @@ public class MapViewInteractor extends GestureDetector.SimpleOnGestureListener {
                 throw new AndroidRuntimeException("You must set overlayView.");
             }
 
-            if (fabView == null) {
-                throw new AndroidRuntimeException("You must set fabView.");
+            if (closeFabView == null) {
+                throw new AndroidRuntimeException("You must set closeFabView.");
             }
 
             if (googleMap == null) {
                 throw new AndroidRuntimeException("You must set googleMap.");
             }
 
-            if (fabView == null) {
-                throw new AndroidRuntimeException("You must set fabView.");
+            if (closeFabView == null) {
+                throw new AndroidRuntimeException("You must set closeFabView.");
             }
 
             MapViewInteractor mapViewInteractor =
-                    new MapViewInteractor(topView, bottomView, overlayView, fabView, googleMap);
+                    new MapViewInteractor(topView, bottomView, overlayView, closeFabView,
+                            editFabView, editAddressView, placeView, googleMap, isEditable);
             mapViewInteractor.setUp(isOverlayParOfBottomView);
             return mapViewInteractor;
         }

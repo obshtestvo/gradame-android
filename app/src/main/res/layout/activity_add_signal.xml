@@ -33,13 +33,51 @@
         android:elevation="0dp" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/map_fab_view"
+        android:id="@+id/close_map_fab_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_add_black_48dp_09"
         android:visibility="gone" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/edit_location_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="88dp"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:src="@drawable/ic_edit_location_white_24px"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/marker_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_place_brown_48px"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/keyline_1"
+        android:background="@android:color/white"
+        android:elevation="@dimen/view_default_elevation"
+        android:paddingLeft="@dimen/keyline_1_minus_8dp"
+        android:paddingRight="@dimen/keyline_1_minus_8dp">
+
+        <EditText
+            android:id="@+id/edit_address_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/map_view_overlay"

@@ -94,8 +94,14 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     @Bind(R.id.map_view)
     MapView mapView;
 
-    @Bind(R.id.map_fab_view)
-    FloatingActionButton mapFabView;
+    @Bind(R.id.close_map_fab_view)
+    FloatingActionButton closeMapFabView;
+
+    @Bind(R.id.edit_location_fab)
+    FloatingActionButton editLocationFabView;
+
+    @Bind(R.id.marker_view)
+    View markerView;
 
     @Bind(R.id.map_view_overlay)
     View mapViewOverlay;
@@ -105,6 +111,9 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Bind(R.id.category_view)
     Spinner categoryView;
+
+    @Bind(R.id.edit_address_view)
+    EditText editAddressView;
 
     @Bind(R.id.address_view)
     EditText addressView;
@@ -165,6 +174,11 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     protected void onStart() {
         super.onStart();
         bus.register(this);
+
+        if (mapViewInteractor != null) {
+            mapViewInteractor.onStart();
+        }
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             locationFragment.getPermission();
         } else {
@@ -182,6 +196,11 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
     protected void onStop() {
         locationFragment.disconnectLocationProvider();
         bus.unregister(this);
+
+        if (mapViewInteractor != null) {
+            mapViewInteractor.onStop();
+        }
+
         super.onStop();
     }
 
@@ -206,7 +225,8 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
                         .topView(topViewGroup)
                         .bottomView(bottomViewGroup)
                         .overlayView(mapViewOverlay)
-                        .fabView(mapFabView)
+                        .closeFabView(closeMapFabView)
+                        .editModeViews(editLocationFabView, editAddressView, markerView)
                         .googleMap(googleMap)
                         .build();
             }

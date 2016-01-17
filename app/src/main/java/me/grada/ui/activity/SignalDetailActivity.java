@@ -141,7 +141,7 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
                         .topView(topViewGroup)
                         .bottomView(recyclerView)
                         .overlayView(recyclerView.getChildAt(0), true)
-                        .fabView(fabView)
+                        .closeFabView(fabView)
                         .googleMap(googleMap)
                         .build();
                 mapViewInteractor
