@@ -26,6 +26,8 @@ package me.grada;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import me.grada.di.Injector;
@@ -46,6 +48,7 @@ public class GradaMeApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         JodaTimeAndroid.init(this);
 
