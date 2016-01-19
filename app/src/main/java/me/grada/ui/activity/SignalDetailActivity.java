@@ -120,9 +120,6 @@ public class SignalDetailActivity extends BaseActivity implements OnMapReadyCall
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        final int elevation = getResources().getDimensionPixelSize(R.dimen.view_default_elevation);
-        ViewCompat.setElevation(topViewGroup, elevation);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
