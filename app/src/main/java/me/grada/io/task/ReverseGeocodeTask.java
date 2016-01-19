@@ -80,6 +80,8 @@ public class ReverseGeocodeTask extends AsyncTask<LatLng, Void, Address> {
     @Override
     protected void onPostExecute(Address address) {
         super.onPostExecute(address);
-        bus.post(new ReverseGeocodingEvent(address.getAddressLine(0)));
+        if (address != null) {
+            bus.post(new ReverseGeocodingEvent(address.getAddressLine(0)));
+        }
     }
 }
