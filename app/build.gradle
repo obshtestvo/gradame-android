@@ -16,6 +16,9 @@ repositories {
 
 apply plugin: 'com.neenbedankt.android-apt'
 
+def gitSha = "git rev-parse --short HEAD".execute().text.trim()
+def gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute().text.trim())
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -24,14 +27,15 @@ android {
         applicationId "me.grada"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode gitCommitCount
+        versionName "0.${gitCommitCount}.${gitSha}"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
         debug {
             applicationIdSuffix ".debug"
         }
