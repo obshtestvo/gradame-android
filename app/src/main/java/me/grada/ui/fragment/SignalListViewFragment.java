@@ -42,10 +42,10 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import me.grada.R;
 import me.grada.di.Injector;
-import me.grada.io.event.MockRecentSignalsFailure;
-import me.grada.io.event.MockRecentSignalsSuccess;
+import me.grada.io.event.MockSignalListFailure;
+import me.grada.io.event.MockSignalListSuccess;
 import me.grada.io.model.Signal;
-import me.grada.io.task.MockRecentSignalsTask;
+import me.grada.io.task.MockSignalListTask;
 import me.grada.ui.activity.SignalDetailActivity;
 import me.grada.ui.adapter.RecentSignalsAdapter;
 import me.grada.ui.view.MaterialProgressView;
@@ -54,8 +54,13 @@ import me.grada.utils.ViewUtils;
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class RecentSignalsFragment extends BaseFragment
+public class SignalListViewFragment extends BaseFragment
         implements RecentSignalsAdapter.OnClickListener  {
+
+    public static final String POSITIVE_SIGNALS = "positiveSignals";
+
+    private static final String[] SIGNAL_FILES =
+            {"json/mock_positive_signals.json", "json/mock_negative_signals.json"};
 
     @Inject
     Bus bus;
@@ -66,16 +71,25 @@ public class RecentSignalsFragment extends BaseFragment
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    private boolean showPositiveSignals;
+
     private RecentSignalsAdapter recentSignalsAdapter;
 
-    public static RecentSignalsFragment newInstance() {
-        return new RecentSignalsFragment();
+    public static SignalListViewFragment newInstance(boolean showPositiveSignals) {
+        Bundle args = new Bundle();
+        args.putBoolean(POSITIVE_SIGNALS, showPositiveSignals);
+
+        SignalListViewFragment fragment = new SignalListViewFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.INSTANCE.getAppComponent().inject(this);
+        showPositiveSignals = getArguments().getBoolean(POSITIVE_SIGNALS);
     }
 
     @Override
@@ -99,7 +113,7 @@ public class RecentSignalsFragment extends BaseFragment
     public void onStart() {
         super.onStart();
         bus.register(this);
-        new MockRecentSignalsTask().execute();
+        new MockSignalListTask(showPositiveSignals).execute();
     }
 
     @Override
@@ -109,13 +123,14 @@ public class RecentSignalsFragment extends BaseFragment
     }
 
     @Subscribe
-    public void onGetSignalsSuccess(MockRecentSignalsSuccess event) {
+    public void onGetSignalListSuccess(MockSignalListSuccess event) {
+        if (event.areSignalsPositive() != showPositiveSignals) return;
         ViewUtils.animateOut(progressView);
         recentSignalsAdapter.setData(event.getSignals());
     }
 
     @Subscribe
-    public void onGetSignalsFailure(MockRecentSignalsFailure event) {
+    public void onGetSignalListFailure(MockSignalListFailure event) {
         Toast.makeText(getActivity(), "TODO: Handle error", Toast.LENGTH_SHORT).show();
         ViewUtils.animateOut(progressView);
     }

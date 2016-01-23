@@ -36,7 +36,7 @@ import me.grada.io.task.ReverseGeocodeTask;
 import me.grada.ui.fragment.HomeFragment;
 import me.grada.ui.fragment.LocationFragment;
 import me.grada.ui.fragment.NearbySignalsFragment;
-import me.grada.ui.fragment.RecentSignalsFragment;
+import me.grada.ui.fragment.SignalListViewFragment;
 import me.grada.utils.MapViewInteractor;
 
 /**
@@ -51,7 +51,7 @@ public interface AppComponent {
 
     void inject(HomeFragment homeFragment);
 
-    void inject(RecentSignalsFragment recentSignalsFragment);
+    void inject(SignalListViewFragment signalListViewFragment);
 
     void inject(NearbySignalsFragment nearbySignalsFragment);
 

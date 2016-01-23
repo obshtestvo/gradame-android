@@ -28,16 +28,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import me.grada.ui.fragment.NearbySignalsFragment;
-import me.grada.ui.fragment.RecentSignalsFragment;
+import me.grada.GradaMeApp;
+import me.grada.R;
+import me.grada.ui.fragment.SignalListViewFragment;
 
 /**
  * Created by yavorivanov on 22/12/2015.
  */
 public class HomePageAdapter extends FragmentPagerAdapter {
 
-    final int PAGE_COUNT = 2;
-    private String tabTitles[] = new String[] { "Recent", "Nearby"};
+    private static final int PAGE_COUNT = 2;
 
     public HomePageAdapter(FragmentManager fm) {
         super(fm);
@@ -50,15 +50,11 @@ public class HomePageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        if (position == 0) {
-            return RecentSignalsFragment.newInstance();
-        }
-        return NearbySignalsFragment.newInstance();
+        return SignalListViewFragment.newInstance(position == 1);
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        // Generate title based on item position
-        return tabTitles[position];
+        return GradaMeApp.get().getString(R.string.signals);
     }
 }

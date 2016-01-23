@@ -61,13 +61,13 @@ import butterknife.Bind;
 import me.grada.R;
 import me.grada.di.Injector;
 import me.grada.io.event.LocationUpdateEvent;
-import me.grada.io.event.MockNearbySignalsFailure;
-import me.grada.io.event.MockNearbySignalsSuccess;
+import me.grada.io.event.MockSignalListFailure;
+import me.grada.io.event.MockSignalListSuccess;
 import me.grada.io.event.NearbySignalsInBackground;
 import me.grada.io.event.NearbySignalsInForeground;
 import me.grada.io.event.ShowLocationRationaleEvent;
 import me.grada.io.model.Signal;
-import me.grada.io.task.MockNearbySignalsTask;
+import me.grada.io.task.MockSignalListTask;
 import me.grada.ui.activity.SignalDetailActivity;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
@@ -222,7 +222,7 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
             return;
         }
 
-        new MockNearbySignalsTask().execute();
+        new MockSignalListTask(true).execute();
 
         googleMap.setMyLocationEnabled(true);
 
@@ -237,7 +237,7 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     }
 
     @Subscribe
-    public void onMockNearbySignalsSuccess(MockNearbySignalsSuccess event) {
+    public void onMockNearbySignalsSuccess(MockSignalListSuccess event) {
         // Add the markers to the map
         List<Signal> signalList = event.getSignals();
         List<Marker> markerList = new ArrayList<>(signalList.size());
@@ -264,7 +264,7 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     }
 
     @Subscribe
-    public void onMockNearbySignalsFailure(MockNearbySignalsFailure event) {
+    public void onMockNearbySignalsFailure(MockSignalListFailure event) {
         // TODO: Handle error
     }
 

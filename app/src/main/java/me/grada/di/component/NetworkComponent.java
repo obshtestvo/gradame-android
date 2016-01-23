@@ -28,8 +28,7 @@ import dagger.Component;
 import me.grada.di.module.GsonModule;
 import me.grada.di.module.NetworkModule;
 import me.grada.di.scope.PerTask;
-import me.grada.io.task.MockNearbySignalsTask;
-import me.grada.io.task.MockRecentSignalsTask;
+import me.grada.io.task.MockSignalListTask;
 
 /**
  * Created by yavorivanov on 22/12/2015.
@@ -38,8 +37,6 @@ import me.grada.io.task.MockRecentSignalsTask;
 @Component(modules = {NetworkModule.class, GsonModule.class}, dependencies = {AppComponent.class})
 public interface NetworkComponent {
 
-    void inject(MockRecentSignalsTask task);
-
-    void inject(MockNearbySignalsTask task);
+    void inject(MockSignalListTask task);
 
 }

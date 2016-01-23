@@ -43,7 +43,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import me.grada.di.Injector;
-import me.grada.io.event.MockRecentSignalsSuccess;
+import me.grada.io.event.MockSignalListSuccess;
 import me.grada.io.model.Signal;
 import me.grada.utils.RecentSignalsComparator;
 
@@ -52,7 +52,7 @@ import me.grada.utils.RecentSignalsComparator;
  * <p/>
  * Created by yavorivanov on 23/12/2015.
  */
-public class MockRecentSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
+public class MockSignalListTask extends AsyncTask<Void, Void, List<Signal>> {
 
     @Inject
     Application application;
@@ -63,9 +63,15 @@ public class MockRecentSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
     @Inject
     Gson gson;
 
+    private final boolean positiveSignals;
+
+    private static final String[] SIGNAL_FILES =
+            {"json/mock_positive_signals.json", "json/mock_negative_signals.json"};
+
     @Inject
-    public MockRecentSignalsTask() {
+    public MockSignalListTask(boolean positiveSignals) {
         Injector.INSTANCE.getNetworkComponent().inject(this);
+        this.positiveSignals = positiveSignals;
     }
 
     @Override
@@ -78,7 +84,8 @@ public class MockRecentSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
         }
 
         try {
-            InputStream is = application.getAssets().open("json/mock_recent_signals.json");
+            InputStream is = application.getAssets()
+                    .open(positiveSignals ? SIGNAL_FILES[1] : SIGNAL_FILES[0]);
             Type type = new TypeToken<ArrayList<Signal>>() {
             }.getType();
             ArrayList<Signal> signals = gson.fromJson(IOUtils.toString(is), type);
@@ -94,6 +101,6 @@ public class MockRecentSignalsTask extends AsyncTask<Void, Void, List<Signal>> {
 
     @Override
     protected void onPostExecute(List<Signal> signals) {
-        bus.post(new MockRecentSignalsSuccess(signals));
+        bus.post(new MockSignalListSuccess(signals, positiveSignals));
     }
 }

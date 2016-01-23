@@ -24,8 +24,28 @@
 
 package me.grada.io.event;
 
+import java.util.List;
+
+import me.grada.io.model.Signal;
+
 /**
  * Created by yavorivanov on 23/12/2015.
  */
-public class MockNearbySignalsFailure {
+public class MockSignalListSuccess {
+
+    private final List<Signal> signals;
+    private final boolean positiveSignals;
+
+    public MockSignalListSuccess(List<Signal> signals, boolean positiveSignals) {
+        this.signals = signals;
+        this.positiveSignals = positiveSignals;
+    }
+
+    public List<Signal> getSignals() {
+        return signals;
+    }
+
+    public boolean areSignalsPositive() {
+        return positiveSignals;
+    }
 }

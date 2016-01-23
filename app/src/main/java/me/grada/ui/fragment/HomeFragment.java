@@ -96,15 +96,17 @@ public class HomeFragment extends BaseFragment {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 if (position == NEARBY_PAGE_INDEX) {
-                    bus.post(new NearbySignalsInForeground());
+                    // bus.post(new NearbySignalsInForeground());
                 } else {
-                    bus.post(new NearbySignalsInBackground());
+                    // bus.post(new NearbySignalsInBackground());
                 }
             }
         });
 
         // Give the TabLayout the ViewPager
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_mood_bad_black_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_mood_black_24dp);
 
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override

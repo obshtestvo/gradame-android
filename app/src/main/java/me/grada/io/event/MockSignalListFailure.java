@@ -27,5 +27,5 @@ package me.grada.io.event;
 /**
  * Created by yavorivanov on 23/12/2015.
  */
-public class MockRecentSignalsFailure {
+public class MockSignalListFailure {
 }
