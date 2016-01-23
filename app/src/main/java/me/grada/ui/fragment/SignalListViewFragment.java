@@ -57,10 +57,7 @@ import me.grada.utils.ViewUtils;
 public class SignalListViewFragment extends BaseFragment
         implements RecentSignalsAdapter.OnClickListener  {
 
-    public static final String POSITIVE_SIGNALS = "positiveSignals";
-
-    private static final String[] SIGNAL_FILES =
-            {"json/mock_positive_signals.json", "json/mock_negative_signals.json"};
+    public static final String SHOW_POSITIVE_SIGNALS = "show_positive_signals";
 
     @Inject
     Bus bus;
@@ -77,7 +74,7 @@ public class SignalListViewFragment extends BaseFragment
 
     public static SignalListViewFragment newInstance(boolean showPositiveSignals) {
         Bundle args = new Bundle();
-        args.putBoolean(POSITIVE_SIGNALS, showPositiveSignals);
+        args.putBoolean(SHOW_POSITIVE_SIGNALS, showPositiveSignals);
 
         SignalListViewFragment fragment = new SignalListViewFragment();
         fragment.setArguments(args);
@@ -89,7 +86,7 @@ public class SignalListViewFragment extends BaseFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.INSTANCE.getAppComponent().inject(this);
-        showPositiveSignals = getArguments().getBoolean(POSITIVE_SIGNALS);
+        showPositiveSignals = getArguments().getBoolean(SHOW_POSITIVE_SIGNALS);
     }
 
     @Override

@@ -31,6 +31,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +46,6 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import me.grada.R;
 import me.grada.di.Injector;
-import me.grada.io.event.NearbySignalsInBackground;
-import me.grada.io.event.NearbySignalsInForeground;
 import me.grada.ui.activity.AddSignalActivity;
 import me.grada.ui.adapter.HomePageAdapter;
 import me.grada.utils.AttachmentHelper;
@@ -69,6 +69,13 @@ public class HomeFragment extends BaseFragment {
     @Bind(R.id.fab_speed_dial)
     FabSpeedDial fabSpeedDial;
 
+    private boolean showMapPerspective;
+
+    private MenuItem mapMenuItem;
+    private MenuItem listMenuItem;
+
+    private HomePageAdapter homePageAdapter;
+
     public static HomeFragment newInstance() {
         return new HomeFragment();
     }
@@ -77,6 +84,20 @@ public class HomeFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.INSTANCE.getAppComponent().inject(this);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        mapMenuItem = menu.findItem(R.id.action_map_perspective);
+        listMenuItem = menu.findItem(R.id.action_list_perspective);
+        updateMenuItemVisibility();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_home, menu);
     }
 
     @Override
@@ -90,18 +111,9 @@ public class HomeFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
-        viewPager.setAdapter(new HomePageAdapter(getChildFragmentManager()));
-        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                if (position == NEARBY_PAGE_INDEX) {
-                    // bus.post(new NearbySignalsInForeground());
-                } else {
-                    // bus.post(new NearbySignalsInBackground());
-                }
-            }
-        });
+        homePageAdapter = new HomePageAdapter(getChildFragmentManager());
+        homePageAdapter.setShowMapPerspective(showMapPerspective);
+        viewPager.setAdapter(homePageAdapter);
 
         // Give the TabLayout the ViewPager
         tabLayout.setupWithViewPager(viewPager);
@@ -125,6 +137,16 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        showMapPerspective = item.getItemId() == R.id.action_map_perspective;
+        homePageAdapter.setShowMapPerspective(showMapPerspective);
+        homePageAdapter.notifyDataSetChanged();
+        updateMenuItemVisibility();
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == AttachmentHelper.TYPE_FILE_CHOOSER && resultCode == Activity.RESULT_OK) {
             Intent i = new Intent(getActivity(), AddSignalActivity.class);
@@ -132,5 +154,10 @@ public class HomeFragment extends BaseFragment {
             startActivity(i);
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void updateMenuItemVisibility() {
+        mapMenuItem.setVisible(!showMapPerspective);
+        listMenuItem.setVisible(showMapPerspective);
     }
 }

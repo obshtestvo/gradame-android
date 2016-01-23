@@ -78,7 +78,7 @@ public class MockSignalListTask extends AsyncTask<Void, Void, List<Signal>> {
     protected List<Signal> doInBackground(Void... params) {
         // Mock network activity
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

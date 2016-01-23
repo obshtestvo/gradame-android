@@ -26,21 +26,31 @@ package me.grada.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
-import me.grada.GradaMeApp;
-import me.grada.R;
 import me.grada.ui.fragment.SignalListViewFragment;
+import me.grada.ui.fragment.SignalMapViewFragment;
 
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class HomePageAdapter extends FragmentPagerAdapter {
+public class HomePageAdapter extends FragmentStatePagerAdapter {
 
     private static final int PAGE_COUNT = 2;
 
+    private boolean showMapPerspective;
+
     public HomePageAdapter(FragmentManager fm) {
         super(fm);
+    }
+
+    public void setShowMapPerspective(boolean showListPerspective) {
+        this.showMapPerspective = showListPerspective;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 
     @Override
@@ -50,11 +60,11 @@ public class HomePageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return SignalListViewFragment.newInstance(position == 1);
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return GradaMeApp.get().getString(R.string.signals);
+        boolean showPositiveSignals = position == 1;
+        if (showMapPerspective) {
+            return SignalMapViewFragment.newInstance(showPositiveSignals);
+        } else {
+            return SignalListViewFragment.newInstance(showPositiveSignals);
+        }
     }
 }

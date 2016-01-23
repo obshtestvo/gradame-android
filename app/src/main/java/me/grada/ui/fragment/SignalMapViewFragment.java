@@ -75,7 +75,10 @@ import me.grada.utils.ViewUtils;
 /**
  * Created by yavorivanov on 22/12/2015.
  */
-public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCallback {
+public class SignalMapViewFragment extends BaseFragment implements OnMapReadyCallback {
+
+    private static final String MAP_STATE = "map_out_state";
+    public static final String SHOW_POSITIVE_SIGNALS = "show_positive_signals";
 
     @Inject
     Bus bus;
@@ -96,15 +99,24 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     private Map<Marker, Signal> markerSignalMap = new HashMap<>();
 
     private LocationFragment locationFragment;
+    private boolean showPositiveSignals;
 
-    public static NearbySignalsFragment newInstance() {
-        return new NearbySignalsFragment();
+    public static SignalMapViewFragment newInstance(boolean showPositiveSignals) {
+        Bundle args = new Bundle();
+        args.putBoolean(SHOW_POSITIVE_SIGNALS, showPositiveSignals);
+
+        SignalMapViewFragment fragment = new SignalMapViewFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.INSTANCE.getAppComponent().inject(this);
+
+        showPositiveSignals = getArguments().getBoolean(SHOW_POSITIVE_SIGNALS);
 
         locationFragment = LocationFragment.newInstance();
         getChildFragmentManager().beginTransaction()
@@ -123,16 +135,23 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
         super.onViewCreated(view, savedInstanceState);
 
         // Gets the MapView from the XML layout and creates it
-        mapView.onCreate(savedInstanceState);
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this.getActivity());
         mapView.getMapAsync(this);
+
+        Bundle mapState = null;
+        if (savedInstanceState != null) {
+            mapState = savedInstanceState.getBundle(MAP_STATE);
+        }
+        mapView.onCreate(mapState);
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
         bus.register(this);
+        new MockSignalListTask(showPositiveSignals).execute();
     }
 
     @Override
@@ -145,6 +164,14 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     public void onStop() {
         bus.unregister(this);
         super.onStop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Bundle mapOutState = new Bundle();
+        mapView.onSaveInstanceState(mapOutState);
+        outState.putBundle(MAP_STATE, mapOutState);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -237,9 +264,13 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     }
 
     @Subscribe
-    public void onMockNearbySignalsSuccess(MockSignalListSuccess event) {
+    public void onGetSignalListSuccess(MockSignalListSuccess event) {
+        if (showPositiveSignals != event.areSignalsPositive()) return;
+
         // Add the markers to the map
         List<Signal> signalList = event.getSignals();
+        if (signalList.isEmpty()) return;
+
         List<Marker> markerList = new ArrayList<>(signalList.size());
 
         for (int i = 0; i < signalList.size(); i++) {
@@ -264,7 +295,7 @@ public class NearbySignalsFragment extends BaseFragment implements OnMapReadyCal
     }
 
     @Subscribe
-    public void onMockNearbySignalsFailure(MockSignalListFailure event) {
+    public void onGetSignalListFailure(MockSignalListFailure event) {
         // TODO: Handle error
     }
 
