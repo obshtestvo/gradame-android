@@ -26,8 +26,11 @@ package me.grada.ui.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -38,6 +41,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
@@ -46,16 +50,18 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import me.grada.R;
 import me.grada.di.Injector;
+import me.grada.io.event.LocationGrantedEvent;
+import me.grada.io.event.LocationUpdateEvent;
+import me.grada.io.event.ShowLocationRationaleEvent;
 import me.grada.ui.activity.AddSignalActivity;
 import me.grada.ui.adapter.HomePageAdapter;
 import me.grada.utils.AttachmentHelper;
+import me.grada.utils.LocationProvider;
 
 /**
  * Created by yavorivanov on 28/12/2015.
  */
 public class HomeFragment extends BaseFragment {
-
-    private static final int NEARBY_PAGE_INDEX = 1;
 
     @Inject
     Bus bus;
@@ -74,7 +80,9 @@ public class HomeFragment extends BaseFragment {
     private MenuItem mapMenuItem;
     private MenuItem listMenuItem;
 
+    private LocationFragment locationFragment;
     private HomePageAdapter homePageAdapter;
+
 
     public static HomeFragment newInstance() {
         return new HomeFragment();
@@ -85,6 +93,11 @@ public class HomeFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         Injector.INSTANCE.getAppComponent().inject(this);
         setHasOptionsMenu(true);
+
+        locationFragment = LocationFragment.newInstance();
+        getChildFragmentManager().beginTransaction()
+                .add(locationFragment, LocationFragment.TAG)
+                .commitAllowingStateLoss();
     }
 
     @Override
@@ -112,13 +125,6 @@ public class HomeFragment extends BaseFragment {
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         homePageAdapter = new HomePageAdapter(getChildFragmentManager());
-        homePageAdapter.setShowMapPerspective(showMapPerspective);
-        viewPager.setAdapter(homePageAdapter);
-
-        // Give the TabLayout the ViewPager
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_mood_bad_black_24dp);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_mood_black_24dp);
 
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
@@ -154,6 +160,67 @@ public class HomeFragment extends BaseFragment {
             startActivity(i);
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        bus.register(this);
+
+        // Ask for location permission if the target is Marshmallow or newer
+        // else connect to Play Services Location API in order to get a location fix
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            locationFragment.getPermission();
+        } else {
+            locationFragment.connectToLocationProvider();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        locationFragment.disconnectLocationProvider();
+        bus.unregister(this);
+    }
+
+    @Subscribe
+    public void onLocationGrantedEvent(LocationGrantedEvent locationGrantedEvent) {
+
+    }
+
+    /**
+     * Shows a {@link Snackbar} asking the user to enable location services.
+     */
+    @Subscribe
+    public void onShowLocationRationaleEvent(ShowLocationRationaleEvent event) {
+        Snackbar snackbar = Snackbar.make(getView(), getString(R.string.nearby_location_permission_rationale),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(R.string.enable_location), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        locationFragment.promptLocationPermission();
+                    }
+                });
+        snackbar.show();
+    }
+
+    @Subscribe
+    public void onLocationUpdateEvent(LocationUpdateEvent event) {
+        // The odd case when the device doesn't have a last known location
+        // Ignore for now, you only hit this case on the emulator
+        Location location = event.getLocation();
+        if (location == null) return;
+
+        LocationProvider.INSTANCE.set(location);
+
+        homePageAdapter.setShowMapPerspective(showMapPerspective);
+        viewPager.setAdapter(homePageAdapter);
+
+        // Give the TabLayout the ViewPager
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_mood_bad_black_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_mood_black_24dp);
     }
 
     private void updateMenuItemVisibility() {

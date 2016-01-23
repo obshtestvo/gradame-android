@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Obshtestvo
+ * Copyright (c) 2016 Obshtestvo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 package me.grada.io.event;
 
 /**
- * Created by yavorivanov on 29/12/2015.
+ * Created by yavorivanov on 10/01/2016.
  */
-public class NearbySignalsInForeground {
+public class LocationGrantedEvent {
 }

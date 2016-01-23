@@ -42,6 +42,7 @@ import com.squareup.otto.Bus;
 import javax.inject.Inject;
 
 import me.grada.di.Injector;
+import me.grada.io.event.LocationGrantedEvent;
 import me.grada.io.event.LocationUpdateEvent;
 import me.grada.io.event.ShowLocationRationaleEvent;
 
@@ -93,6 +94,7 @@ public class LocationFragment extends BaseFragment implements
         if (requestCode == LOCATION_PERMISSION_REQUEST) {
             // Received the permission for the location provider
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                bus.post(new LocationGrantedEvent());
                 // Connect to Play Services Location API in order to get a location fix
                 connectToLocationProvider();
             } else {

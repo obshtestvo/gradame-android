@@ -28,10 +28,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,9 +61,6 @@ import me.grada.di.Injector;
 import me.grada.io.event.LocationUpdateEvent;
 import me.grada.io.event.MockSignalListFailure;
 import me.grada.io.event.MockSignalListSuccess;
-import me.grada.io.event.NearbySignalsInBackground;
-import me.grada.io.event.NearbySignalsInForeground;
-import me.grada.io.event.ShowLocationRationaleEvent;
 import me.grada.io.model.Signal;
 import me.grada.io.task.MockSignalListTask;
 import me.grada.ui.activity.SignalDetailActivity;
@@ -89,16 +84,10 @@ public class SignalMapViewFragment extends BaseFragment implements OnMapReadyCal
     @Bind(R.id.map_view)
     MapView mapView;
 
-    /**
-     * Used as a prompt for granting location permission on >= Marshmallow
-     */
-    private Snackbar snackbar;
-
     private GoogleMap googleMap;
 
     private Map<Marker, Signal> markerSignalMap = new HashMap<>();
 
-    private LocationFragment locationFragment;
     private boolean showPositiveSignals;
 
     public static SignalMapViewFragment newInstance(boolean showPositiveSignals) {
@@ -117,11 +106,6 @@ public class SignalMapViewFragment extends BaseFragment implements OnMapReadyCal
         Injector.INSTANCE.getAppComponent().inject(this);
 
         showPositiveSignals = getArguments().getBoolean(SHOW_POSITIVE_SIGNALS);
-
-        locationFragment = LocationFragment.newInstance();
-        getChildFragmentManager().beginTransaction()
-                .add(locationFragment, LocationFragment.TAG)
-                .commitAllowingStateLoss();
     }
 
     @Override
@@ -202,42 +186,6 @@ public class SignalMapViewFragment extends BaseFragment implements OnMapReadyCal
         });
 
         ViewUtils.animateOut(progressView);
-    }
-
-    @Subscribe
-    public void onNearbySignalsInForeground(NearbySignalsInForeground event) {
-        // Ask for location permission if the target is Marshmallow or newer
-        // else connect to Play Services Location API in order to get a location fix
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            locationFragment.getPermission();
-        } else {
-            locationFragment.connectToLocationProvider();
-        }
-    }
-
-    @Subscribe
-    public void onNearbySignalsInBackground(NearbySignalsInBackground event) {
-        // Hide the snackbar, if present
-        if (snackbar != null) {
-            snackbar.dismiss();
-        }
-        locationFragment.disconnectLocationProvider();
-    }
-
-    /**
-     * Shows a {@link Snackbar} asking the user to enable location services.
-     */
-    @Subscribe
-    public void onShowLocationRationaleEvent(ShowLocationRationaleEvent event) {
-        snackbar = Snackbar.make(getView(), getString(R.string.nearby_location_permission_rationale),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(R.string.enable_location), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        locationFragment.promptLocationPermission();
-                    }
-                });
-        snackbar.show();
     }
 
     @Subscribe
