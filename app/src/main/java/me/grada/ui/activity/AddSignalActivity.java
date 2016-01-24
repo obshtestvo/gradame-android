@@ -123,6 +123,7 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
 
     private Snackbar snackbar;
     private LocationFragment locationFragment;
+    private Location location;
 
     private MapViewInteractor mapViewInteractor;
     private GoogleMap googleMap;
@@ -229,6 +230,8 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
                         .editModeViews(editLocationFabView, editAddressView, markerView)
                         .googleMap(googleMap)
                         .build();
+
+                handleLocation();
             }
         });
     }
@@ -295,7 +298,15 @@ public class AddSignalActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Subscribe
     public void onLocationUpdateEvent(LocationUpdateEvent event) {
-        Location location = event.getLocation();
+        location = event.getLocation();
+        handleLocation();
+    }
+
+    private void handleLocation() {
+        if (mapViewInteractor == null ||location == null) {
+            return;
+        }
+
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mapViewInteractor.animateTo(latLng);
         new ReverseGeocodeTask().execute(latLng);
