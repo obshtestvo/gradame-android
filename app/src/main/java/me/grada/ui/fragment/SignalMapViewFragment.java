@@ -27,7 +27,6 @@ package me.grada.ui.fragment;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -58,7 +57,6 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import me.grada.R;
 import me.grada.di.Injector;
-import me.grada.io.event.LocationUpdateEvent;
 import me.grada.io.event.MockSignalListFailure;
 import me.grada.io.event.MockSignalListSuccess;
 import me.grada.io.model.Signal;
@@ -174,8 +172,16 @@ public class SignalMapViewFragment extends BaseFragment implements OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
+
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -186,29 +192,6 @@ public class SignalMapViewFragment extends BaseFragment implements OnMapReadyCal
         });
 
         ViewUtils.animateOut(progressView);
-    }
-
-    @Subscribe
-    public void onLocationUpdateEvent(LocationUpdateEvent event) {
-        if (ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        new MockSignalListTask(true).execute();
-
-        googleMap.setMyLocationEnabled(true);
-
-        // The odd case when the device doesn't have a last known location
-        // Ignore for now, you only hit this case on the emulator
-        Location location = event.getLocation();
-        if (location == null) return;
-
-        final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
-        googleMap.animateCamera(cameraUpdate);
     }
 
     @Subscribe
