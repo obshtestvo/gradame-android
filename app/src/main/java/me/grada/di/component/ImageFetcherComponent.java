@@ -31,7 +31,7 @@ import me.grada.di.module.AppModule;
 import me.grada.di.module.PicassoModule;
 import me.grada.ui.activity.AddSignalActivity;
 import me.grada.ui.activity.SignalDetailActivity;
-import me.grada.ui.adapter.RecentSignalsAdapter;
+import me.grada.ui.adapter.SignalRecyclerViewAdapter;
 
 /**
  * Created by yavorivanov on 27/12/2015.
@@ -40,7 +40,7 @@ import me.grada.ui.adapter.RecentSignalsAdapter;
 @Component(modules = {PicassoModule.class, AppModule.class})
 public interface ImageFetcherComponent {
 
-    void inject(RecentSignalsAdapter recentSignalsAdapter);
+    void inject(SignalRecyclerViewAdapter signalRecyclerViewAdapter);
 
     void inject(SignalDetailActivity signalDetailActivity);
 

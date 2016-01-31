@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ The MIT License (MIT)
   ~
   ~ Copyright (c) 2016 Obshtestvo
@@ -21,26 +21,13 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/action_map_perspective"
-            android:icon="@drawable/ic_map_black_24dp"
-            android:title="Map View"
-            app:showAsAction="always" />
-        <item
-            android:id="@+id/action_list_perspective"
-            android:icon="@drawable/ic_view_stream_black_24dp"
-            android:title="List View"
-            android:visible="false"
-            app:showAsAction="always" />
-        <item
-            android:id="@+id/action_filter"
-            android:icon="@drawable/ic_filter_list_white_24dp"
-            android:title="Filter"
-            app:showAsAction="always" />
-    </group>
-
-</menu>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0">
+    <path
+        android:fillColor="#FF616161"
+        android:pathData="M20,2L4,2c-1.1,0 -2,0.9 -2,2v18l4,-4h14c1.1,0 2,-0.9 2,-2L22,4c0,-1.1 -0.9,-2 -2,-2zM20,16L6,16l-2,2L4,4h16v12z"/>
+</vector>

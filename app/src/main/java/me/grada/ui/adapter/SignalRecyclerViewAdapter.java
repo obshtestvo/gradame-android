@@ -24,7 +24,6 @@
 
 package me.grada.ui.adapter;
 
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +51,7 @@ import me.grada.utils.DateTimeUtils;
 /**
  * Created by yavorivanov on 27/12/2015.
  */
-public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdapter.ViewHolder> {
+public class SignalRecyclerViewAdapter extends RecyclerView.Adapter<SignalRecyclerViewAdapter.ViewHolder> {
 
     public interface OnClickListener {
 
@@ -72,7 +71,7 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
      */
     private int lastRenderedView = -1;
 
-    public RecentSignalsAdapter() {
+    public SignalRecyclerViewAdapter() {
         Injector.INSTANCE.getImageFetcherComponent().inject(this);
     }
 
@@ -88,7 +87,7 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View container = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_recent_signal, parent, false);
+                .inflate(R.layout.list_item_signal, parent, false);
         return new ViewHolder(container);
     }
 
@@ -97,6 +96,28 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
 
         // Populate the views
         final Signal signal = signals.get(position);
+
+        final String imageUrl;
+        final String username;
+        final String likeCount;
+        final String chatCount;
+
+        if (position == 0) {
+            username = "antitoxic";
+            imageUrl = "https://github.com/antitoxic.png";
+            chatCount = "50";
+            likeCount = "130";
+        } else {
+            username = "marchev";
+            imageUrl = "https://github.com/marchev.png";
+            chatCount = "100";
+            likeCount = "95";
+        }
+        holder.username.setText(username);
+        holder.likeCount.setText(likeCount);
+        holder.chatCount.setText(chatCount);
+        picasso.load(imageUrl).noFade().into(holder.userView);
+
 
         // Thumbnail
         picasso.load(signal.getImages()[0]).into(holder.imageView);
@@ -122,16 +143,28 @@ public class RecentSignalsAdapter extends RecyclerView.Adapter<RecentSignalsAdap
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.card_view)
-        CardView cardView;
+        View cardView;
+
+        @Bind(R.id.user_image_view)
+        ImageView userView;
+
+        @Bind(R.id.username)
+        TextView username;
+
+        @Bind(R.id.elapsed_time)
+        TextView elapsedTime;
+
+        @Bind(R.id.like_count)
+        TextView likeCount;
+
+        @Bind(R.id.chat_count)
+        TextView chatCount;
 
         @Bind(R.id.image)
         ImageView imageView;
 
         @Bind(R.id.title)
         TextView titleView;
-
-        @Bind(R.id.elapsed_time)
-        TextView elapsedTime;
 
         public ViewHolder(View itemView) {
             super(itemView);

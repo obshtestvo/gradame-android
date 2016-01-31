@@ -36,6 +36,6 @@
     <color name="orange_700">#FFF57C00</color>
 
     <color name="list_item_primary">#FF212121</color>
-    <color name="list_item_secondary">#FFE0E0E0</color>
+    <color name="list_item_secondary">#FFBDBDBD</color>
 
 </resources>

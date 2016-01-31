@@ -47,7 +47,7 @@ import me.grada.io.event.MockSignalListSuccess;
 import me.grada.io.model.Signal;
 import me.grada.io.task.MockSignalListTask;
 import me.grada.ui.activity.SignalDetailActivity;
-import me.grada.ui.adapter.RecentSignalsAdapter;
+import me.grada.ui.adapter.SignalRecyclerViewAdapter;
 import me.grada.ui.view.MaterialProgressView;
 import me.grada.utils.ViewUtils;
 
@@ -55,7 +55,7 @@ import me.grada.utils.ViewUtils;
  * Created by yavorivanov on 22/12/2015.
  */
 public class SignalListViewFragment extends BaseFragment
-        implements RecentSignalsAdapter.OnClickListener  {
+        implements SignalRecyclerViewAdapter.OnClickListener  {
 
     public static final String SHOW_POSITIVE_SIGNALS = "show_positive_signals";
 
@@ -70,7 +70,7 @@ public class SignalListViewFragment extends BaseFragment
 
     private boolean showPositiveSignals;
 
-    private RecentSignalsAdapter recentSignalsAdapter;
+    private SignalRecyclerViewAdapter adapter;
 
     public static SignalListViewFragment newInstance(boolean showPositiveSignals) {
         Bundle args = new Bundle();
@@ -92,7 +92,7 @@ public class SignalListViewFragment extends BaseFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recent_signals, container, false);
+        return inflater.inflate(R.layout.fragment_signals, container, false);
     }
 
     @Override
@@ -102,8 +102,8 @@ public class SignalListViewFragment extends BaseFragment
         // Set up the recycler view
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(recentSignalsAdapter = new RecentSignalsAdapter());
-        recentSignalsAdapter.setOnClickListener(this);
+        recyclerView.setAdapter(adapter = new SignalRecyclerViewAdapter());
+        adapter.setOnClickListener(this);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class SignalListViewFragment extends BaseFragment
     public void onGetSignalListSuccess(MockSignalListSuccess event) {
         if (event.areSignalsPositive() != showPositiveSignals) return;
         ViewUtils.animateOut(progressView);
-        recentSignalsAdapter.setData(event.getSignals());
+        adapter.setData(event.getSignals());
     }
 
     @Subscribe

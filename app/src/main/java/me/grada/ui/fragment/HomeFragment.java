@@ -25,10 +25,13 @@
 package me.grada.ui.fragment;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -133,6 +136,11 @@ public class HomeFragment extends BaseFragment {
                     Intent intent = AttachmentHelper.getFileChooserIntent();
                     startActivityForResult(Intent.createChooser(intent, "Select a file"),
                             AttachmentHelper.TYPE_FILE_CHOOSER);
+                } else if (menuItem.getItemId() == R.id.action_picture) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        startActivityForResult(intent, AttachmentHelper.TYPE_PICTURE);
+                    }
                 } else {
                     startActivity(new Intent(getActivity(), AddSignalActivity.class));
                 }
@@ -144,17 +152,26 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        showMapPerspective = item.getItemId() == R.id.action_map_perspective;
-        homePageAdapter.setShowMapPerspective(showMapPerspective);
-        homePageAdapter.notifyDataSetChanged();
-        updateMenuItemVisibility();
-        return super.onOptionsItemSelected(item);
-
+        switch (item.getItemId()) {
+            case R.id.action_list_perspective:
+            case R.id.action_map_perspective:
+                showMapPerspective = item.getItemId() == R.id.action_map_perspective;
+                homePageAdapter.setShowMapPerspective(showMapPerspective);
+                homePageAdapter.notifyDataSetChanged();
+                updateMenuItemVisibility();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == AttachmentHelper.TYPE_FILE_CHOOSER && resultCode == Activity.RESULT_OK) {
+            Intent i = new Intent(getActivity(), AddSignalActivity.class);
+            i.putExtra(AddSignalActivity.ATTACHMENT_URI, data.getData());
+            startActivity(i);
+        } else if (requestCode == AttachmentHelper.TYPE_PICTURE && resultCode == Activity.RESULT_OK) {
             Intent i = new Intent(getActivity(), AddSignalActivity.class);
             i.putExtra(AddSignalActivity.ATTACHMENT_URI, data.getData());
             startActivity(i);
