@@ -9,6 +9,7 @@ buildscript {
         classpath 'com.jakewharton.hugo:hugo-plugin:1.2.1'
     }
 }
+
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.jakewharton.hugo'
@@ -68,6 +69,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.android.support:percent:23.1.0'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
     compile 'com.google.code.gson:gson:2.5'
     compile 'com.google.dagger:dagger:2.0.1'
@@ -91,3 +93,5 @@ dependencies {
         transitive = true;
     }
 }
+
+apply plugin: 'com.google.gms.google-services'
