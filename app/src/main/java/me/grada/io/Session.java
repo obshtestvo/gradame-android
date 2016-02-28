@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Obshtestvo
+ * Copyright (c) 2016 Obshtestvo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,23 @@
  * SOFTWARE.
  */
 
-package me.grada.di.component;
-
-import javax.inject.Singleton;
-
-import dagger.Component;
-import me.grada.di.module.AppModule;
-import me.grada.di.module.PicassoModule;
-import me.grada.ui.activity.AddSignalActivity;
-import me.grada.ui.activity.HomeActivity;
-import me.grada.ui.activity.SignalDetailActivity;
-import me.grada.ui.adapter.SignalRecyclerViewAdapter;
+package me.grada.io;
 
 /**
- * Created by yavorivanov on 27/12/2015.
+ * Created by yavorivanov on 21/02/2016.
  */
-@Singleton
-@Component(modules = {PicassoModule.class, AppModule.class})
-public interface ImageFetcherComponent {
+public enum Session {
 
-    void inject(HomeActivity homeActivity);
+    INSTANCE;
 
-    void inject(SignalRecyclerViewAdapter signalRecyclerViewAdapter);
+    private String session;
 
-    void inject(SignalDetailActivity signalDetailActivity);
+    public boolean hasSession() {
+        return session != null;
+    }
 
-    void inject(AddSignalActivity addSignalActivity);
+    public void setSession(String session) {
+        this.session = session;
+    }
 
 }

@@ -43,7 +43,8 @@ public class ViewUtils {
 
     public static final Interpolator FAST_OUT_SLOW_IN_INTERPOLATOR = new FastOutSlowInInterpolator();
 
-    private ViewUtils() {}
+    private ViewUtils() {
+    }
 
     /**
      * Resolves a color resource taking into account {@link android.os.Build.VERSION#SDK_INT}.
@@ -63,7 +64,7 @@ public class ViewUtils {
     /**
      * Sets a drawable as background taking into account {@link android.os.Build.VERSION#SDK_INT}.
      *
-     * @param view The view to receive a new background.
+     * @param view     The view to receive a new background.
      * @param drawable The drawable to be set as background.
      */
     public static void setBackground(View view, Drawable drawable) {
@@ -76,6 +77,7 @@ public class ViewUtils {
 
     /**
      * Animates in the passed in view by scaling its x and y in to 1.0f and setting its alpha to 1.0f.
+     *
      * @param view The view to receive the animation.
      */
     public static void animateIn(final View view) {
@@ -102,6 +104,7 @@ public class ViewUtils {
 
     /**
      * Animates out the passed in view by scaling its x and y out to .0f and setting its alpha to .0f.
+     *
      * @param view The view to receive the animation.
      */
     public static void animateOut(final View view) {
@@ -123,6 +126,32 @@ public class ViewUtils {
                 view.setVisibility(View.GONE);
             }
         }
+    }
+
+    public static void switchVisibility(final View invisibleView, final View visibleView) {
+        invisibleView.setAlpha(0.0f);
+        invisibleView.animate()
+                .alpha(1.0F)
+                .setDuration(200L)
+                .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        invisibleView.setVisibility(View.VISIBLE);
+                    }
+                });
+
+        visibleView.animate()
+                .alpha(0.0F)
+                .setDuration(200L)
+                .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        visibleView.setVisibility(View.GONE);
+                    }
+                });
+
     }
 
     public static void addOnGlobalLayoutListener(@NonNull final View listenerReceiver,
